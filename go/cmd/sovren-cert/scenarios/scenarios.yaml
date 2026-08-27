@@ -1,0 +1,269 @@
+# sovren-cert scenario definitions (contracts/certification.md scenario
+# groups). Embedded into the binary; override with --scenario-dir <dir>
+# containing one or more *.yaml files of the same shape.
+#
+# needs gates (first unmet need decides the classification). Plan deps D2
+# (faucet) and D3 (testnet manifest / DNS) are CLOSED, so a runtime gap is now
+# an operator-provisioning SKIPPED, never a dependency BLOCKED:
+#   manifest  — a loadable network manifest      (gap => SKIPPED: pass --manifest)
+#   funds     — SOVREN_CERT_MNEMONIC funded key  (gap => SKIPPED: export + fund the mnemonic)
+#   rpc       — SOVREN_CERT_CHAIN_RPC / manifest endpoint
+#   gotool    — Go toolchain on PATH
+#   tsx       — typescript/node_modules/.bin/tsx (npm ci)
+#   promtool  — promtool on PATH
+scenarios:
+  # --- Group N: network & node -------------------------------------------
+  - id: N1
+    title: Network manifest verifies against the live network
+    group: N
+    requirement_refs: [FR-005, FR-006, FR-007, SC-003]
+    required: true
+    needs: [manifest, rpc, gotool]
+    description: >-
+      Runs `sovren-manifest verify` against the target manifest — every
+      contract rule including live-endpoint and peer dial checks.
+  - id: N2
+    title: Node reachability, sync progress and chain-id match
+    group: N
+    requirement_refs: [FR-006, FR-007, SC-003]
+    required: true
+    needs: [rpc]
+    description: >-
+      NodeStatus over CometBFT RPC; asserts the node is not catching up, the
+      height advances, and the chain_id matches the manifest.
+  - id: N3
+    title: Failover serves reads from the standby node
+    group: N
+    requirement_refs: [FR-006, FR-013]
+    required: true
+    needs: []
+    description: >-
+      Offline drill of the kit failover wrapper: primary outage promotes the
+      health-checked standby with no caller-visible error.
+  - id: N4
+    title: Wrong-chain detection closes the crediting gate
+    group: N
+    requirement_refs: [FR-007, FR-044, FR-023]
+    required: true
+    needs: []
+    description: >-
+      Offline drill: a node reporting a foreign chain_id must abort the
+      scanner cycle, open a WRONG_CHAIN_ID chain-review condition, and close
+      the FR-023 crediting gate.
+  - id: N5
+    title: Shipped network manifest parses strictly (offline)
+    group: N
+    requirement_refs: [FR-005, FR-057]
+    required: true
+    needs: []
+    description: >-
+      The kit-shipped mainnet manifest (and the --manifest target when given)
+      loads under the strict schema: no unknown keys, no placeholders, all
+      required chain constants present.
+
+  # --- Group A: address & amounts ----------------------------------------
+  - id: A1
+    title: Cross-language vector conformance harness
+    group: A
+    requirement_refs: [FR-014, FR-015, FR-016, FR-017, FR-018, FR-022, SC-006]
+    required: true
+    needs: [gotool, tsx]
+    description: >-
+      Drives test/conformance/run.sh — byte-identity of committed vectors,
+      Go runner, TypeScript runner, field-by-field diff.
+  - id: A2
+    title: Go and TypeScript parity assertion with preserved outputs
+    group: A
+    requirement_refs: [FR-022, SC-006]
+    required: true
+    needs: [gotool, tsx]
+    description: >-
+      Runs both conformance runners directly and diffs the results with
+      `sovren-vectors compare`, preserving both result files as evidence.
+
+  # --- Group D: deposits ---------------------------------------------------
+  - id: D1
+    title: Single deposit credited exactly once (fund→scan→credit + replay)
+    group: D
+    requirement_refs: [FR-023, FR-024, FR-026, FR-028, SC-004]
+    required: true
+    needs: [funds, gotool]
+  - id: D2
+    title: Multi-message transaction attribution
+    group: D
+    requirement_refs: [FR-024, FR-025, SC-004]
+    required: true
+    needs: [funds]
+    description: >-
+      One transaction carrying two MsgSend messages to two watched addresses
+      credits each exactly once under (tx_hash, message_index) identity.
+  - id: D3
+    title: MsgMultiSend output attribution
+    group: D
+    requirement_refs: [FR-024, FR-025, SC-004]
+    required: true
+    needs: [funds]
+  - id: D4
+    title: Failed transaction is never credited
+    group: D
+    requirement_refs: [FR-029, SC-004]
+    required: true
+    needs: [funds]
+  - id: D5
+    title: Below-minimum deposit parks (never silently lost)
+    group: D
+    requirement_refs: [FR-027, FR-040]
+    required: true
+    needs: [funds]
+  - id: D6
+    title: Internal / fee-funding transfers are never customer-credited
+    group: D
+    requirement_refs: [FR-023, FR-030]
+    required: true
+    needs: [funds]
+  - id: D7
+    title: Mixed watched/external input set parks for review
+    group: D
+    requirement_refs: [FR-025, FR-030]
+    required: true
+    needs: [funds]
+    description: >-
+      Driven through the adapter's own block parser with a synthesized
+      multi-input MsgMultiSend (modern SDK chains reject that shape at
+      CheckTx, so no live chain can produce it — the classification and
+      review-parking path is what is certified).
+
+  # --- Group R: restart / durability --------------------------------------
+  - id: R1
+    title: Scanner kill/restart mid-range — no loss, no duplication
+    group: R
+    requirement_refs: [FR-026, SC-004]
+    required: true
+    needs: [funds, gotool]
+  - id: R2
+    title: Processed-range replay hits only DUPLICATE
+    group: R
+    requirement_refs: [FR-024, FR-026, SC-004]
+    required: true
+    needs: [funds, gotool]
+  - id: R3
+    title: Database outage and recovery
+    group: R
+    requirement_refs: [FR-026, FR-027, SC-004]
+    required: true
+    needs: [funds, gotool]
+
+  # --- Group W: withdrawals ------------------------------------------------
+  - id: W1
+    title: Withdrawal workflow end-to-end with the bundled exec signer
+    group: W
+    requirement_refs: [FR-031, FR-032, FR-035, FR-036, FR-061, SC-005]
+    required: true
+    needs: [funds, gotool]
+    description: >-
+      Full state machine REQUESTED→…→CONFIRMED with signing delegated to the
+      bundled sovren-exec-signer-demo subprocess (external-signer boundary).
+  - id: W2
+    title: Duplicate idempotency key yields one transaction ever
+    group: W
+    requirement_refs: [FR-033, SC-005]
+    required: true
+    needs: [funds, gotool]
+  - id: W3
+    title: Twenty concurrent withdrawals — zero sequence collisions
+    group: W
+    requirement_refs: [FR-034, SC-005]
+    required: true
+    needs: [funds, gotool]
+  - id: W4
+    title: Broadcast timeout — search first, never auto re-sign
+    group: W
+    requirement_refs: [FR-035, SC-005]
+    required: true
+    needs: [funds]
+  - id: W5
+    title: DeliverTx failure reported accurately as FAILED
+    group: W
+    requirement_refs: [FR-035, FR-036, SC-005]
+    required: true
+    needs: [funds]
+
+  # --- Group S: sweeps -----------------------------------------------------
+  - id: S1
+    title: Sweep lifecycle on a funded deposit address
+    group: S
+    requirement_refs: [FR-037, FR-038]
+    required: true
+    needs: [funds, gotool]
+  - id: S2
+    title: Fee-insufficient sweep defers without looping
+    group: S
+    requirement_refs: [FR-038, FR-040]
+    required: true
+    needs: [funds]
+  - id: S3
+    title: Sweep re-run is idempotent
+    group: S
+    requirement_refs: [FR-039]
+    required: true
+    needs: [funds]
+
+  # --- Group C: reconciliation & ops (storage-level, no chain) -------------
+  - id: C1
+    title: Ledger-formula reconciliation — clean run
+    group: C
+    requirement_refs: [FR-046, FR-047, SC-009]
+    required: true
+    needs: []
+  - id: C2
+    title: Injected discrepancy carries every FR-048 field
+    group: C
+    requirement_refs: [FR-048, SC-009]
+    required: true
+    needs: []
+  - id: C3
+    title: Failed withdrawal fee (FeeOutflow) reconciles clean
+    group: C
+    requirement_refs: [FR-046, FR-047, FR-048]
+    required: true
+    needs: []
+  - id: C4
+    title: Each pause control stops exactly its own flow
+    group: C
+    requirement_refs: [FR-051]
+    required: true
+    needs: []
+  - id: C5
+    title: Resume-from-height replays idempotently
+    group: C
+    requirement_refs: [FR-024, FR-026, FR-051]
+    required: true
+    needs: []
+
+  # --- Group M: monitoring -------------------------------------------------
+  - id: M1
+    title: Contract metrics exist and move under load
+    group: M
+    requirement_refs: [FR-049, SC-009]
+    required: true
+    needs: []
+  - id: M2
+    title: Alert rule packs pass promtool unit tests
+    group: M
+    requirement_refs: [FR-049, SC-009]
+    required: true
+    needs: [promtool]
+
+  # --- Group G: go-live & operational readiness ----------------------------
+  - id: G1
+    title: FR-053 contacts & status page published and resolvable
+    group: G
+    requirement_refs: [FR-053, SC-011]
+    required: true
+    needs: []
+    dependencies: [D5]
+    description: >-
+      The exchange-facing contacts & service points (docs/contacts.md) must be
+      published and resolvable. While the D5 placeholders remain the scenario is
+      BLOCKED(D5); once real values are published every URL must resolve
+      (HTTP < 400) and the security contact must match SECURITY.md.

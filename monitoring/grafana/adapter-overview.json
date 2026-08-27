@@ -1,0 +1,129 @@
+{
+  "title": "Sovren Adapter — Overview",
+  "uid": "sovren-adapter-overview",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "timezone": "utc",
+  "time": { "from": "now-6h", "to": "now" },
+  "refresh": "15s",
+  "tags": ["sovren", "exchange-kit"],
+  "templating": {
+    "list": [
+      {
+        "name": "chain_id",
+        "type": "query",
+        "datasource": { "type": "prometheus" },
+        "query": "label_values(sovren_scanner_latest_chain_height, chain_id)",
+        "refresh": 2
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Scanner heights (chain vs processed)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        { "expr": "sovren_scanner_latest_chain_height{chain_id=\"$chain_id\"}", "legendFormat": "chain tip" },
+        { "expr": "sovren_scanner_last_processed_height{chain_id=\"$chain_id\"}", "legendFormat": "processed" }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Scanner height lag (alert > 20 for 5m)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        { "expr": "sovren_scanner_height_lag{chain_id=\"$chain_id\"}", "legendFormat": "lag" }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Deposit flow (discovered / credited / duplicates per 5m)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        { "expr": "increase(sovren_deposits_discovered_total{chain_id=\"$chain_id\"}[5m])", "legendFormat": "discovered" },
+        { "expr": "increase(sovren_deposits_credited_total{chain_id=\"$chain_id\"}[5m])", "legendFormat": "credited" },
+        { "expr": "increase(sovren_duplicate_deposits_total{chain_id=\"$chain_id\"}[5m])", "legendFormat": "duplicates" }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Withdrawal flow (requested / broadcast / confirmed / failed per 5m)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        { "expr": "increase(sovren_withdrawals_requested_total{chain_id=\"$chain_id\"}[5m])", "legendFormat": "requested" },
+        { "expr": "increase(sovren_withdrawals_broadcast_total{chain_id=\"$chain_id\"}[5m])", "legendFormat": "broadcast" },
+        { "expr": "increase(sovren_withdrawals_confirmed_total{chain_id=\"$chain_id\"}[5m])", "legendFormat": "confirmed" },
+        { "expr": "sum by (chain_id) (increase(sovren_withdrawals_failed_total{chain_id=\"$chain_id\"}[5m]))", "legendFormat": "failed" }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Deposit backlog (creditable, uncredited)",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 16 },
+      "targets": [{ "expr": "sovren_deposit_backlog{chain_id=\"$chain_id\"}" }]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Review queue depth",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 16 },
+      "targets": [{ "expr": "sovren_review_queue_depth{chain_id=\"$chain_id\"}" }]
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Open chain-review conditions (crediting gate)",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 16 },
+      "targets": [{ "expr": "sum(sovren_chain_review_conditions_open{chain_id=\"$chain_id\"})" }]
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "Paused flows (controls)",
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 16 },
+      "targets": [{ "expr": "sum(sovren_controls_paused{chain_id=\"$chain_id\"})" }]
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Controls state by flow (1 = paused)",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 22 },
+      "targets": [
+        { "expr": "sovren_controls_paused{chain_id=\"$chain_id\"}", "legendFormat": "{{flow}}" }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "Reconciliation discrepancies (any increment pages)",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 22 },
+      "targets": [
+        { "expr": "increase(sovren_reconciliation_discrepancies_total{chain_id=\"$chain_id\"}[5m])", "legendFormat": "discrepancies" }
+      ]
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Transport errors (RPC / gRPC per 5m, by endpoint)",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 28 },
+      "targets": [
+        { "expr": "increase(sovren_rpc_errors_total{chain_id=\"$chain_id\"}[5m])", "legendFormat": "rpc {{endpoint}}" },
+        { "expr": "increase(sovren_grpc_errors_total{chain_id=\"$chain_id\"}[5m])", "legendFormat": "grpc {{endpoint}}" }
+      ]
+    },
+    {
+      "id": 12,
+      "type": "table",
+      "title": "Build info",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 28 },
+      "targets": [{ "expr": "sovren_adapter_build_info", "format": "table", "instant": true }]
+    }
+  ]
+}

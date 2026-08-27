@@ -1,0 +1,36 @@
+# Sovren Exchange Integration Kit — Prometheus configuration
+# (contracts/metrics.md). Defaults are exchange-configurable; the shipped
+# intervals are the contract baseline: 15s scrape, 1m rule evaluation — the
+# 1m evaluation interval is the "monitoring interval" SC-009's alert-latency
+# bound refers to.
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 1m
+
+rule_files:
+  # Mount monitoring/alerts/ at this path (or adjust to your layout).
+  - /etc/prometheus/alerts/*.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+scrape_configs:
+  # The reference adapter's exposition endpoint (metrics.listen, default :9464).
+  - job_name: sovren-adapter
+    static_configs:
+      - targets: ["sovren-adapter:9464"]
+
+  # The SOVR node's CometBFT metrics endpoint (config.toml
+  # [instrumentation] prometheus = true, port 26660) — feeds the node-level
+  # rules (PeerCountLow, node health dashboard).
+  - job_name: sovr-node
+    static_configs:
+      - targets: ["sovr-node:26660"]
+
+  # Host metrics for DiskUsageHigh (node-exporter).
+  - job_name: node-exporter
+    static_configs:
+      - targets: ["node-exporter:9100"]

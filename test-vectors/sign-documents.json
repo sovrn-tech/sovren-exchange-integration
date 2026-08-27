@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "kit_version": "0.1.0",
+  "UNSAFE_TEST_ONLY": true,
+  "vectors": [
+    {
+      "id": "tx-001",
+      "chain_id": "sovr-1",
+      "account_number": "42",
+      "sequence": "7",
+      "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "to": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+      "amount_base_units": "1000000",
+      "denom": "usovr",
+      "fee_base_units": "32500",
+      "gas_limit": "130000",
+      "memo": "vector",
+      "signer_mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      "signer_hd_path": "m/44'/118'/0'/0/0",
+      "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+      "sign_doc_bytes_hex": "0a97010a8c010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126c0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b6567767875331a100a0575736f76721207313030303030301206766563746f7212680a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b6212040a020801180712140a0e0a0575736f76721205333235303010d0f7071a06736f76722d31202a",
+      "summary": {
+        "chain_id": "sovr-1",
+        "account_number": "42",
+        "sequence": "7",
+        "message_type": "/cosmos.bank.v1beta1.MsgSend",
+        "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+        "recipient_address": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+        "amount_base_units": "1000000",
+        "denom": "usovr",
+        "fee_base_units": "32500",
+        "gas_limit": "130000",
+        "memo": "vector"
+      }
+    },
+    {
+      "id": "tx-002",
+      "chain_id": "sovr-1",
+      "account_number": "42",
+      "sequence": "8",
+      "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "to": "sovr1avgyh77ycn997ja45q5q8ss8y9mr424j92gylj",
+      "amount_base_units": "250000000",
+      "denom": "usovr",
+      "fee_base_units": "26000",
+      "gas_limit": "104000",
+      "memo": "",
+      "signer_mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      "signer_hd_path": "m/44'/118'/0'/0/0",
+      "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+      "sign_doc_bytes_hex": "0a91010a8e010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126e0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316176677968373779636e3939376a6134357135713873733879396d723432346a393267796c6a1a120a0575736f7672120932353030303030303012680a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b6212040a020801180812140a0e0a0575736f76721205323630303010c0ac061a06736f76722d31202a",
+      "summary": {
+        "chain_id": "sovr-1",
+        "account_number": "42",
+        "sequence": "8",
+        "message_type": "/cosmos.bank.v1beta1.MsgSend",
+        "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+        "recipient_address": "sovr1avgyh77ycn997ja45q5q8ss8y9mr424j92gylj",
+        "amount_base_units": "250000000",
+        "denom": "usovr",
+        "fee_base_units": "26000",
+        "gas_limit": "104000",
+        "memo": ""
+      }
+    },
+    {
+      "id": "tx-003",
+      "chain_id": "sovr-1",
+      "account_number": "1",
+      "sequence": "0",
+      "from": "sovr1avgyh77ycn997ja45q5q8ss8y9mr424j92gylj",
+      "to": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "amount_base_units": "1",
+      "denom": "usovr",
+      "fee_base_units": "0",
+      "gas_limit": "200000",
+      "memo": "min",
+      "signer_mnemonic": "legal winner thank year wave sausage worth useful legal winner thank yellow",
+      "signer_hd_path": "m/44'/118'/0'/0/0",
+      "public_key_compressed_hex": "03510c69e626043eda293ccd3aecf49a568a9aab62173e77540fe385a454e61513",
+      "sign_doc_bytes_hex": "0a8e010a86010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412660a2b736f7672316176677968373779636e3939376a6134357135713873733879396d723432346a393267796c6a122b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a67757130616573383234781a0a0a0575736f767212013112036d696e12560a4e0a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a2103510c69e626043eda293ccd3aecf49a568a9aab62173e77540fe385a454e6151312040a020801120410c09a0c1a06736f76722d312001",
+      "summary": {
+        "chain_id": "sovr-1",
+        "account_number": "1",
+        "sequence": "0",
+        "message_type": "/cosmos.bank.v1beta1.MsgSend",
+        "sender_address": "sovr1avgyh77ycn997ja45q5q8ss8y9mr424j92gylj",
+        "recipient_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+        "amount_base_units": "1",
+        "denom": "usovr",
+        "fee_base_units": "0",
+        "gas_limit": "200000",
+        "memo": "min"
+      }
+    },
+    {
+      "id": "tx-004",
+      "chain_id": "sovr-1",
+      "account_number": "7",
+      "sequence": "77",
+      "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "to": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+      "amount_base_units": "1000000000000000",
+      "denom": "usovr",
+      "fee_base_units": "500000",
+      "gas_limit": "200000",
+      "memo": "max",
+      "signer_mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      "signer_hd_path": "m/44'/118'/0'/0/0",
+      "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+      "sign_doc_bytes_hex": "0a9d010a95010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412750a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b6567767875331a190a0575736f767212103130303030303030303030303030303012036d617812690a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b6212040a020801184d12150a0f0a0575736f7672120635303030303010c09a0c1a06736f76722d312007",
+      "summary": {
+        "chain_id": "sovr-1",
+        "account_number": "7",
+        "sequence": "77",
+        "message_type": "/cosmos.bank.v1beta1.MsgSend",
+        "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+        "recipient_address": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+        "amount_base_units": "1000000000000000",
+        "denom": "usovr",
+        "fee_base_units": "500000",
+        "gas_limit": "200000",
+        "memo": "max"
+      }
+    },
+    {
+      "id": "tx-005",
+      "chain_id": "test-sovr-1",
+      "account_number": "42",
+      "sequence": "7",
+      "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "to": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+      "amount_base_units": "1000000",
+      "denom": "usovr",
+      "fee_base_units": "32500",
+      "gas_limit": "130000",
+      "memo": "vector",
+      "signer_mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      "signer_hd_path": "m/44'/118'/0'/0/0",
+      "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+      "sign_doc_bytes_hex": "0a97010a8c010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126c0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b6567767875331a100a0575736f76721207313030303030301206766563746f7212680a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b6212040a020801180712140a0e0a0575736f76721205333235303010d0f7071a0b746573742d736f76722d31202a",
+      "summary": {
+        "chain_id": "test-sovr-1",
+        "account_number": "42",
+        "sequence": "7",
+        "message_type": "/cosmos.bank.v1beta1.MsgSend",
+        "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+        "recipient_address": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+        "amount_base_units": "1000000",
+        "denom": "usovr",
+        "fee_base_units": "32500",
+        "gas_limit": "130000",
+        "memo": "vector"
+      }
+    },
+    {
+      "id": "tx-006",
+      "chain_id": "test-sovr-1",
+      "account_number": "42",
+      "sequence": "8",
+      "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "to": "sovr1avgyh77ycn997ja45q5q8ss8y9mr424j92gylj",
+      "amount_base_units": "250000000",
+      "denom": "usovr",
+      "fee_base_units": "26000",
+      "gas_limit": "104000",
+      "memo": "",
+      "signer_mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      "signer_hd_path": "m/44'/118'/0'/0/0",
+      "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+      "sign_doc_bytes_hex": "0a91010a8e010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126e0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316176677968373779636e3939376a6134357135713873733879396d723432346a393267796c6a1a120a0575736f7672120932353030303030303012680a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b6212040a020801180812140a0e0a0575736f76721205323630303010c0ac061a0b746573742d736f76722d31202a",
+      "summary": {
+        "chain_id": "test-sovr-1",
+        "account_number": "42",
+        "sequence": "8",
+        "message_type": "/cosmos.bank.v1beta1.MsgSend",
+        "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+        "recipient_address": "sovr1avgyh77ycn997ja45q5q8ss8y9mr424j92gylj",
+        "amount_base_units": "250000000",
+        "denom": "usovr",
+        "fee_base_units": "26000",
+        "gas_limit": "104000",
+        "memo": ""
+      }
+    },
+    {
+      "id": "tx-msend-001",
+      "kind": "multisend_parse_only",
+      "chain_id": "sovr-1",
+      "account_number": "42",
+      "sequence": "9",
+      "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "denom": "usovr",
+      "fee_base_units": "40000",
+      "gas_limit": "160000",
+      "memo": "multisend parse fixture",
+      "signer_mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      "signer_hd_path": "m/44'/118'/0'/0/0",
+      "multisend": {
+        "inputs": [
+          {
+            "address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+            "coins": [
+              {
+                "denom": "testtoken",
+                "amount": "5"
+              },
+              {
+                "denom": "usovr",
+                "amount": "3000000"
+              }
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "address": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+            "coins": [
+              {
+                "denom": "usovr",
+                "amount": "1000000"
+              }
+            ]
+          },
+          {
+            "address": "sovr1avgyh77ycn997ja45q5q8ss8y9mr424j92gylj",
+            "coins": [
+              {
+                "denom": "testtoken",
+                "amount": "5"
+              },
+              {
+                "denom": "usovr",
+                "amount": "2000000"
+              }
+            ]
+          }
+        ]
+      },
+      "body_bytes_hex": "0a89020a212f636f736d6f732e62616e6b2e763162657461312e4d73674d756c746953656e6412e3010a4f0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478120e0a0974657374746f6b656e12013512100a0575736f7672120733303030303030123f0a2b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b65677678753312100a0575736f7672120731303030303030124f0a2b736f7672316176677968373779636e3939376a6134357135713873733879396d723432346a393267796c6a120e0a0974657374746f6b656e12013512100a0575736f767212073230303030303012176d756c746973656e642070617273652066697874757265",
+      "auth_info_bytes_hex": "0a0812040a020801180912140a0e0a0575736f7672120534303030301080e209",
+      "sign_doc_bytes_hex": "0aa5020a89020a212f636f736d6f732e62616e6b2e763162657461312e4d73674d756c746953656e6412e3010a4f0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478120e0a0974657374746f6b656e12013512100a0575736f7672120733303030303030123f0a2b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b65677678753312100a0575736f7672120731303030303030124f0a2b736f7672316176677968373779636e3939376a6134357135713873733879396d723432346a393267796c6a120e0a0974657374746f6b656e12013512100a0575736f767212073230303030303012176d756c746973656e64207061727365206669787475726512200a0812040a020801180912140a0e0a0575736f7672120534303030301080e2091a06736f76722d31202a",
+      "signature_hex": "9e5d3e2e18892afca3cbff163aeb6ade312c9928f979f2d2f7fa5fd89a8b886b5c17d17bca962710b78d32d5842920f206f272f7cbfc32cc64a582a8fc6b6bd7",
+      "tx_raw_bytes_hex": "0aa5020a89020a212f636f736d6f732e62616e6b2e763162657461312e4d73674d756c746953656e6412e3010a4f0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478120e0a0974657374746f6b656e12013512100a0575736f7672120733303030303030123f0a2b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b65677678753312100a0575736f7672120731303030303030124f0a2b736f7672316176677968373779636e3939376a6134357135713873733879396d723432346a393267796c6a120e0a0974657374746f6b656e12013512100a0575736f767212073230303030303012176d756c746973656e64207061727365206669787475726512200a0812040a020801180912140a0e0a0575736f7672120534303030301080e2091a409e5d3e2e18892afca3cbff163aeb6ade312c9928f979f2d2f7fa5fd89a8b886b5c17d17bca962710b78d32d5842920f206f272f7cbfc32cc64a582a8fc6b6bd7",
+      "tx_hash": "71DFE22DC9E49B2393F08ED577E3F55A860EB11397F0B44211B3B07EA1F447C6"
+    }
+  ]
+}

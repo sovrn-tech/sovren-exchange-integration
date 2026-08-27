@@ -1,0 +1,56 @@
+# promtool unit tests for the node-level alert rules.
+#   promtool test rules node-alerts.test.yml
+
+rule_files:
+  - ../node-alerts.yml
+
+evaluation_interval: 1m
+
+tests:
+  # PeerCountLow: fewer than 2 peers sustained for 5m warns.
+  - interval: 1m
+    input_series:
+      - series: 'cometbft_p2p_peers{chain_id="sovr-1"}'
+        values: "1x10"
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: PeerCountLow
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: PeerCountLow
+        exp_alerts:
+          - exp_labels:
+              chain_id: sovr-1
+              severity: warn
+            exp_annotations:
+              summary: "Node peer count below 2"
+              description: "The SOVR node has 1 peers. Check seeds/persistent_peers and network reachability (docs/node-operations.md)."
+
+  # Healthy peer count never fires.
+  - interval: 1m
+    input_series:
+      - series: 'cometbft_p2p_peers{chain_id="sovr-1"}'
+        values: "8x10"
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: PeerCountLow
+        exp_alerts: []
+
+  # DiskUsageHigh: 90% full for 10m warns.
+  - interval: 1m
+    input_series:
+      - series: 'node_filesystem_avail_bytes{fstype="ext4",mountpoint="/data"}'
+        values: "10000000000x15"
+      - series: 'node_filesystem_size_bytes{fstype="ext4",mountpoint="/data"}'
+        values: "100000000000x15"
+    alert_rule_test:
+      - eval_time: 11m
+        alertname: DiskUsageHigh
+        exp_alerts:
+          - exp_labels:
+              fstype: ext4
+              mountpoint: /data
+              severity: warn
+            exp_annotations:
+              summary: "Node disk usage above 85%"
+              description: "Filesystem /data is 90% full. Chain data growth will halt the node when the disk fills."

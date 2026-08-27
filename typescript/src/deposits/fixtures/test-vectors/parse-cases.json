@@ -1,0 +1,1109 @@
+{
+  "description": "UNSAFE_TEST_ONLY fixture material (standard test mnemonic, no real funds). Shared Go/TS parseBlockTransfers conformance fixtures. Regenerate: SOVREN_WRITE_FIXTURES=1 go test ./deposits -run TestParseFixtures (exchange-kit/go).",
+  "chain_id": "sovr-fixture-1",
+  "watch": [
+    {
+      "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+      "kind": "CUSTOMER_DEPOSIT"
+    },
+    {
+      "address": "sovr1zuvk68xw4y9swp06796rx8zarjvvkrt622e3pv",
+      "kind": "OMNIBUS",
+      "memo_required": true
+    },
+    {
+      "address": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun",
+      "kind": "HOT_WALLET"
+    },
+    {
+      "address": "sovr1neyy3lf7kjfs8pm5880g6hjgltngu69q65tpme",
+      "kind": "FEE_WALLET"
+    }
+  ],
+  "cases": [
+    {
+      "id": "single-send-external",
+      "description": "kit-built signed MsgSend from an external sender to a watched customer address; fee payer is external so no FEE_DEDUCTION",
+      "block": {
+        "height": 100,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB64",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD63",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "CpYBCowBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmwKK3NvdnIxOXJsNGNtMmhtcjhhZnk0a2xkcHh6M2ZrYTRqZ3VxMGFlczgyNHgSK3NvdnIxa25nN3R2ODNxZXNndnYyemU3aHhsdzR1cmZyams4dnE5cnRoOGMaEAoFdXNvdnISBzEwMDAwMDASBWhlbGxvEmQKTgpGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQJPTirZnDTWC5umKDyUMahBivhnMhKWH5ene2N3/NBbYhIECgIIARISCgwKBXVzb3ZyEgM1MDAQwJoMGkA2NXLA0NWJsiPj0W5OOkGUtfmySNMjG4FgjW9W5wwUPhjp3l7lEVON12GIUPBzHrGDXgcWhX0gmmetzYkzOxmX"
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0,
+          "events": [
+            {
+              "type": "tx",
+              "attributes": [
+                {
+                  "key": "fee",
+                  "value": "500usovr"
+                },
+                {
+                  "key": "fee_payer",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "transfers": [
+          {
+            "tx_hash": "E44209D064FEB3B454E3F9464132B235C261CFC8D924ED59C62D909C899D9E24",
+            "message_index": 0,
+            "coin_index": 0,
+            "op_index": 0,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+            "denom": "usovr",
+            "amount_base_units": "1000000",
+            "memo": "hello",
+            "tx_code": 0,
+            "classification": "EXTERNAL_DEPOSIT",
+            "review_reason": ""
+          }
+        ],
+        "fee_deductions": [],
+        "review_candidates": [],
+        "block_events": []
+      }
+    },
+    {
+      "id": "multi-msg-multi-coin",
+      "description": "two MsgSend in one tx, mixed denoms; usovr coins sit at wire index 1 (coins are denom-sorted)",
+      "block": {
+        "height": 101,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB65",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD64",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "Cq0CCpUBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEnUKK3NvdnIxOXJsNGNtMmhtcjhhZnk0a2xkcHh6M2ZrYTRqZ3VxMGFlczgyNHgSK3NvdnIxa25nN3R2ODNxZXNndnYyemU3aHhsdzR1cmZyams4dnE5cnRoOGMaCAoDZm9vEgE5Gg8KBXVzb3ZyEgYyNTAwMDAKkgEKHC9jb3Ntb3MuYmFuay52MWJldGExLk1zZ1NlbmQScgorc292cjFqcmttZGN3Z3E5NHVhYW14NnpheDJsdWV3bGhmN3U0a2Vndnh1MxIrc292cjEyZWN5dWRkZzR3bG5oenR1c2dqdTV6eHhqZ3pua3o3ZjRlN2Z1bhoICgNiYXISATMaDAoFdXNvdnISAzc3NxoBAQ=="
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0
+        }
+      ],
+      "expected": {
+        "transfers": [
+          {
+            "tx_hash": "74B1CCCACDD8C7390A6A78D2FDBE9B041A2B58989ACD5A8E302C7CFE36450BD3",
+            "message_index": 0,
+            "coin_index": 1,
+            "op_index": 1,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+            "denom": "usovr",
+            "amount_base_units": "250000",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "EXTERNAL_DEPOSIT",
+            "review_reason": ""
+          },
+          {
+            "tx_hash": "74B1CCCACDD8C7390A6A78D2FDBE9B041A2B58989ACD5A8E302C7CFE36450BD3",
+            "message_index": 1,
+            "coin_index": 1,
+            "op_index": 1,
+            "direction": "IN",
+            "address": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun",
+            "counterparty_set": [
+              "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3"
+            ],
+            "sender_address": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+            "denom": "usovr",
+            "amount_base_units": "777",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "EXTERNAL_DEPOSIT",
+            "review_reason": ""
+          }
+        ],
+        "fee_deductions": [],
+        "review_candidates": [],
+        "block_events": []
+      }
+    },
+    {
+      "id": "failed-tx",
+      "description": "DeliverTx failure: transfer recorded with tx_code, fee still deducted post-ante, no review candidates",
+      "block": {
+        "height": 102,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB66",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD65",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "CowBCokBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmkKK3NvdnIxOXJsNGNtMmhtcjhhZnk0a2xkcHh6M2ZrYTRqZ3VxMGFlczgyNHgSK3NvdnIxa25nN3R2ODNxZXNndnYyemU3aHhsdzR1cmZyams4dnE5cnRoOGMaDQoFdXNvdnISBDUwMDAaAQE="
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 5,
+          "log": "out of gas",
+          "events": [
+            {
+              "type": "tx",
+              "attributes": [
+                {
+                  "key": "fee",
+                  "value": "400usovr"
+                },
+                {
+                  "key": "fee_payer",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "transfers": [
+          {
+            "tx_hash": "11F5D33165718601FE6230E0D51C24A4953C7A7DFEFDC3A858B606746418708D",
+            "message_index": 0,
+            "coin_index": 0,
+            "op_index": 0,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+            "denom": "usovr",
+            "amount_base_units": "5000",
+            "memo": "",
+            "tx_code": 5,
+            "classification": "EXTERNAL_DEPOSIT",
+            "review_reason": ""
+          }
+        ],
+        "fee_deductions": [],
+        "review_candidates": [],
+        "block_events": []
+      }
+    },
+    {
+      "id": "non-usovr-only",
+      "description": "foreign-denom transfer to a watched address: never recorded",
+      "block": {
+        "height": 103,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB67",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD66",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "CokBCoYBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmYKK3NvdnIxOXJsNGNtMmhtcjhhZnk0a2xkcHh6M2ZrYTRqZ3VxMGFlczgyNHgSK3NvdnIxa25nN3R2ODNxZXNndnYyemU3aHhsdzR1cmZyams4dnE5cnRoOGMaCgoDZm9vEgMxMjMaAQE="
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0
+        }
+      ],
+      "expected": {
+        "transfers": [],
+        "fee_deductions": [],
+        "review_candidates": [],
+        "block_events": []
+      }
+    },
+    {
+      "id": "omnibus-missing-memo",
+      "description": "memo_required omnibus recipient without a memo: EXTERNAL_DEPOSIT with a review reason (never auto-credited)",
+      "block": {
+        "height": 104,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB68",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD67",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "Co0BCooBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmoKK3NvdnIxOXJsNGNtMmhtcjhhZnk0a2xkcHh6M2ZrYTRqZ3VxMGFlczgyNHgSK3NvdnIxenV2azY4eHc0eTlzd3AwNjc5NnJ4OHphcmp2dmtydDYyMmUzcHYaDgoFdXNvdnISBTcwMDAwGgEB"
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0
+        }
+      ],
+      "expected": {
+        "transfers": [
+          {
+            "tx_hash": "25A3CF651F57336388915B56C2FADD509B6240C2537F0C355EA2D321FA29952C",
+            "message_index": 0,
+            "coin_index": 0,
+            "op_index": 0,
+            "direction": "IN",
+            "address": "sovr1zuvk68xw4y9swp06796rx8zarjvvkrt622e3pv",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+            "denom": "usovr",
+            "amount_base_units": "70000",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "EXTERNAL_DEPOSIT",
+            "review_reason": "omnibus memo required but missing or unrecognized (FR-016)"
+          }
+        ],
+        "fee_deductions": [],
+        "review_candidates": [],
+        "block_events": []
+      }
+    },
+    {
+      "id": "internal-sweep",
+      "description": "customer deposit address to hot wallet: SWEEP both sides, never a customer credit",
+      "block": {
+        "height": 105,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB69",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD68",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "Co0BCooBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmoKK3NvdnIxa25nN3R2ODNxZXNndnYyemU3aHhsdzR1cmZyams4dnE5cnRoOGMSK3NvdnIxMmVjeXVkZGc0d2xuaHp0dXNnanU1enh4amd6bmt6N2Y0ZTdmdW4aDgoFdXNvdnISBTkwMDAwGgEB"
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0
+        }
+      ],
+      "expected": {
+        "transfers": [
+          {
+            "tx_hash": "F8062F23ED90F5829B655AC9D0AE537193F44129AB1D3D56AAC15AC292C0CE5A",
+            "message_index": 0,
+            "coin_index": 0,
+            "op_index": 0,
+            "direction": "IN",
+            "address": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun",
+            "counterparty_set": [
+              "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+            ],
+            "sender_address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "denom": "usovr",
+            "amount_base_units": "90000",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "SWEEP",
+            "review_reason": ""
+          },
+          {
+            "tx_hash": "F8062F23ED90F5829B655AC9D0AE537193F44129AB1D3D56AAC15AC292C0CE5A",
+            "message_index": 0,
+            "coin_index": 0,
+            "op_index": 1,
+            "direction": "OUT",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun"
+            ],
+            "sender_address": null,
+            "denom": "usovr",
+            "amount_base_units": "90000",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "SWEEP",
+            "review_reason": ""
+          }
+        ],
+        "fee_deductions": [],
+        "review_candidates": [],
+        "block_events": []
+      }
+    },
+    {
+      "id": "fee-funding",
+      "description": "fee wallet to customer address: FEE_FUNDING, never a customer credit",
+      "block": {
+        "height": 106,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB6a",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD69",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "Co0BCooBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmoKK3NvdnIxbmV5eTNsZjdramZzOHBtNTg4MGc2aGpnbHRuZ3U2OXE2NXRwbWUSK3NvdnIxa25nN3R2ODNxZXNndnYyemU3aHhsdzR1cmZyams4dnE5cnRoOGMaDgoFdXNvdnISBTUwMDAwGgEB"
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0
+        }
+      ],
+      "expected": {
+        "transfers": [
+          {
+            "tx_hash": "DEE4099C61DE1ADBF8CB5A1523642BD13FFE09C453877BE3E9C16554730FEE2C",
+            "message_index": 0,
+            "coin_index": 0,
+            "op_index": 0,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr1neyy3lf7kjfs8pm5880g6hjgltngu69q65tpme"
+            ],
+            "sender_address": "sovr1neyy3lf7kjfs8pm5880g6hjgltngu69q65tpme",
+            "denom": "usovr",
+            "amount_base_units": "50000",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "FEE_FUNDING",
+            "review_reason": ""
+          },
+          {
+            "tx_hash": "DEE4099C61DE1ADBF8CB5A1523642BD13FFE09C453877BE3E9C16554730FEE2C",
+            "message_index": 0,
+            "coin_index": 0,
+            "op_index": 1,
+            "direction": "OUT",
+            "address": "sovr1neyy3lf7kjfs8pm5880g6hjgltngu69q65tpme",
+            "counterparty_set": [
+              "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+            ],
+            "sender_address": null,
+            "denom": "usovr",
+            "amount_base_units": "50000",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "FEE_FUNDING",
+            "review_reason": ""
+          }
+        ],
+        "fee_deductions": [],
+        "review_candidates": [],
+        "block_events": []
+      }
+    },
+    {
+      "id": "hot-wallet-withdrawal",
+      "description": "hot wallet to external recipient: OUT WITHDRAWAL plus FEE_DEDUCTION (watched payer, event present)",
+      "block": {
+        "height": 107,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB6b",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD6a",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "Co4BCosBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmsKK3NvdnIxMmVjeXVkZGc0d2xuaHp0dXNnanU1enh4amd6bmt6N2Y0ZTdmdW4SK3NvdnIxOXJsNGNtMmhtcjhhZnk0a2xkcHh6M2ZrYTRqZ3VxMGFlczgyNHgaDwoFdXNvdnISBjQwMDAwMBIUEhIKDAoFdXNvdnISAzk5ORDAmgwaAQE="
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0,
+          "events": [
+            {
+              "type": "tx",
+              "attributes": [
+                {
+                  "key": "fee",
+                  "value": "999usovr"
+                },
+                {
+                  "key": "fee_payer",
+                  "value": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "transfers": [
+          {
+            "tx_hash": "90A8FC8CC1F34C4B5E5CDF693FDD93850D54EC6DA22E1C52C9DA1A211F347E00",
+            "message_index": 0,
+            "coin_index": 0,
+            "op_index": 1,
+            "direction": "OUT",
+            "address": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "sender_address": null,
+            "denom": "usovr",
+            "amount_base_units": "400000",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "WITHDRAWAL",
+            "review_reason": ""
+          }
+        ],
+        "fee_deductions": [
+          {
+            "tx_hash": "90A8FC8CC1F34C4B5E5CDF693FDD93850D54EC6DA22E1C52C9DA1A211F347E00",
+            "payer_address": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun",
+            "fee_base_units": "999",
+            "tx_code": 0,
+            "fee_granter_used": false
+          }
+        ],
+        "review_candidates": [],
+        "block_events": []
+      }
+    },
+    {
+      "id": "multisend-mixed-inputs",
+      "description": "mixed watched/external MultiSend inputs: recipient row is UNATTRIBUTED_REVIEW with ambiguous sender",
+      "block": {
+        "height": 108,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB6c",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD6b",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "CucBCuQBCiEvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dNdWx0aVNlbmQSvgEKPQorc292cjE5cmw0Y20yaG1yOGFmeTRrbGRweHozZmthNGpndXEwYWVzODI0eBIOCgV1c292chIFNjAwMDAKPQorc292cjEyZWN5dWRkZzR3bG5oenR1c2dqdTV6eHhqZ3pua3o3ZjRlN2Z1bhIOCgV1c292chIFNDAwMDASPgorc292cjFrbmc3dHY4M3Flc2d2djJ6ZTdoeGx3NHVyZnJqazh2cTlydGg4YxIPCgV1c292chIGMTAwMDAwGgEB"
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0
+        }
+      ],
+      "expected": {
+        "transfers": [
+          {
+            "tx_hash": "BA28E6BD29E62CBB24987216587DA69879F25226F5773871C7FFC6657A31FB7B",
+            "message_index": 0,
+            "coin_index": 0,
+            "op_index": 0,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+              "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun"
+            ],
+            "sender_address": null,
+            "denom": "usovr",
+            "amount_base_units": "100000",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "UNATTRIBUTED_REVIEW",
+            "review_reason": "mixed watched/external input set — no deterministic input→output attribution"
+          },
+          {
+            "tx_hash": "BA28E6BD29E62CBB24987216587DA69879F25226F5773871C7FFC6657A31FB7B",
+            "message_index": 0,
+            "coin_index": 1,
+            "op_index": 2,
+            "direction": "OUT",
+            "address": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun",
+            "counterparty_set": [
+              "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+            ],
+            "sender_address": null,
+            "denom": "usovr",
+            "amount_base_units": "40000",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "INTERNAL_TRANSFER",
+            "review_reason": ""
+          }
+        ],
+        "fee_deductions": [],
+        "review_candidates": [],
+        "block_events": []
+      }
+    },
+    {
+      "id": "multisend-single-input",
+      "description": "single-input MultiSend: deterministic coin_index across outputs in wire order",
+      "block": {
+        "height": 109,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB6d",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD6c",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "CvABCu0BCiEvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dNdWx0aVNlbmQSxwEKPQorc292cjE5cmw0Y20yaG1yOGFmeTRrbGRweHozZmthNGpndXEwYWVzODI0eBIOCgV1c292chIFMzAwMDASPQorc292cjFqcmttZGN3Z3E5NHVhYW14NnpheDJsdWV3bGhmN3U0a2Vndnh1MxIOCgV1c292chIFMTAwMDASRworc292cjFrbmc3dHY4M3Flc2d2djJ6ZTdoeGx3NHVyZnJqazh2cTlydGg4YxIICgNmb28SATUSDgoFdXNvdnISBTIwMDAwGgEB"
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0
+        }
+      ],
+      "expected": {
+        "transfers": [
+          {
+            "tx_hash": "363EBB225D892624A851C193F6F64BB213E6859592CC9B41D8464B130347DE80",
+            "message_index": 0,
+            "coin_index": 2,
+            "op_index": 2,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+            "denom": "usovr",
+            "amount_base_units": "20000",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "EXTERNAL_DEPOSIT",
+            "review_reason": ""
+          }
+        ],
+        "fee_deductions": [],
+        "review_candidates": [],
+        "block_events": []
+      }
+    },
+    {
+      "id": "unsupported-shape-event-review",
+      "description": "unknown message type with a watched recipient in msg-indexed events: tx-scoped review candidate, no transfer",
+      "block": {
+        "height": 110,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB6e",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD6d",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "Co8BCowBCh0vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnRXhlYxJrCitzb3ZyMTlybDRjbTJobXI4YWZ5NGtsZHB4ejNma2E0amd1cTBhZXM4MjR4Eitzb3ZyMWtuZzd0djgzcWVzZ3Z2MnplN2h4bHc0dXJmcmprOHZxOXJ0aDhjGg8KBXVzb3ZyEgY1MDAwMDAaAQE="
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0,
+          "events": [
+            {
+              "type": "tx",
+              "attributes": [
+                {
+                  "key": "fee",
+                  "value": "100usovr"
+                },
+                {
+                  "key": "fee_payer",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                }
+              ]
+            },
+            {
+              "type": "coin_received",
+              "attributes": [
+                {
+                  "key": "receiver",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                },
+                {
+                  "key": "amount",
+                  "value": "500000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "transfers": [],
+        "fee_deductions": [],
+        "review_candidates": [
+          {
+            "tx_hash": "057AC5675D7036873F9FC261654EBA14BFF6D2403D1FAFC071C6760B5F8A1843",
+            "message_index": 0,
+            "event_index": 1,
+            "op_index": 65538,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [],
+            "amount_base_units": "500000"
+          }
+        ],
+        "block_events": []
+      }
+    },
+    {
+      "id": "mixed-known-unknown-no-double-attribution",
+      "description": "supported MsgSend (msg 0, watched customer) + unsupported message (msg 1, watched omnibus): msg 0 is a canonical transfer, event review only covers the unattributed msg 1 — the attributed recipient is never double-counted (PR #300)",
+      "block": {
+        "height": 113,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB71",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD70",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "Cp0CCosBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmsKK3NvdnIxOXJsNGNtMmhtcjhhZnk0a2xkcHh6M2ZrYTRqZ3VxMGFlczgyNHgSK3NvdnIxa25nN3R2ODNxZXNndnYyemU3aHhsdzR1cmZyams4dnE5cnRoOGMaDwoFdXNvdnISBjUwMDAwMAqMAQodL2Nvc21vcy5hdXRoei52MWJldGExLk1zZ0V4ZWMSaworc292cjE5cmw0Y20yaG1yOGFmeTRrbGRweHozZmthNGpndXEwYWVzODI0eBIrc292cjF6dXZrNjh4dzR5OXN3cDA2Nzk2cng4emFyanZ2a3J0NjIyZTNwdhoPCgV1c292chIGNzAwMDAwGgEB"
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0,
+          "events": [
+            {
+              "type": "coin_received",
+              "attributes": [
+                {
+                  "key": "receiver",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                },
+                {
+                  "key": "amount",
+                  "value": "500000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_received",
+              "attributes": [
+                {
+                  "key": "receiver",
+                  "value": "sovr1zuvk68xw4y9swp06796rx8zarjvvkrt622e3pv"
+                },
+                {
+                  "key": "amount",
+                  "value": "700000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "1"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "transfers": [
+          {
+            "tx_hash": "D1A8C5C7E9FDE0544A4FA5161D10B75EF87E7A2670144C55E7B91791D8F0352E",
+            "message_index": 0,
+            "coin_index": 0,
+            "op_index": 0,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+            "denom": "usovr",
+            "amount_base_units": "500000",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "EXTERNAL_DEPOSIT",
+            "review_reason": ""
+          }
+        ],
+        "fee_deductions": [],
+        "review_candidates": [
+          {
+            "tx_hash": "D1A8C5C7E9FDE0544A4FA5161D10B75EF87E7A2670144C55E7B91791D8F0352E",
+            "message_index": 1,
+            "event_index": 1,
+            "op_index": 65538,
+            "direction": "IN",
+            "address": "sovr1zuvk68xw4y9swp06796rx8zarjvvkrt622e3pv",
+            "counterparty_set": [],
+            "amount_base_units": "700000"
+          }
+        ],
+        "block_events": []
+      }
+    },
+    {
+      "id": "finalize-block-events",
+      "description": "block-scoped events touching watched addresses: block-level unattributed records only",
+      "block": {
+        "height": 111,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB6f",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD6e",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": []
+      },
+      "tx_results": null,
+      "finalize_block_events": [
+        {
+          "type": "coin_received",
+          "attributes": [
+            {
+              "key": "receiver",
+              "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+            },
+            {
+              "key": "amount",
+              "value": "8888usovr"
+            }
+          ]
+        },
+        {
+          "type": "coin_spent",
+          "attributes": [
+            {
+              "key": "spender",
+              "value": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun"
+            },
+            {
+              "key": "amount",
+              "value": "7777usovr"
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "transfers": [],
+        "fee_deductions": [],
+        "review_candidates": [],
+        "block_events": [
+          {
+            "event_index": 0,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [],
+            "amount_base_units": "8888"
+          },
+          {
+            "event_index": 3,
+            "direction": "OUT",
+            "address": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun",
+            "counterparty_set": [],
+            "amount_base_units": "7777"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dup-event-family-single-review",
+      "description": "one movement emits BOTH coin_received and transfer for the same msg_index/amount: exactly one IN review candidate — the transfer view wins (carries the counterparty), the coin_received duplicate is dropped so the expected balance is not doubled (PR #300)",
+      "block": {
+        "height": 114,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB72",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD71",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "Co8BCowBCh0vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnRXhlYxJrCitzb3ZyMTlybDRjbTJobXI4YWZ5NGtsZHB4ejNma2E0amd1cTBhZXM4MjR4Eitzb3ZyMWtuZzd0djgzcWVzZ3Z2MnplN2h4bHc0dXJmcmprOHZxOXJ0aDhjGg8KBXVzb3ZyEgY1MDAwMDAaAQE="
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0,
+          "events": [
+            {
+              "type": "coin_received",
+              "attributes": [
+                {
+                  "key": "receiver",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                },
+                {
+                  "key": "amount",
+                  "value": "500000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "transfer",
+              "attributes": [
+                {
+                  "key": "recipient",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                },
+                {
+                  "key": "sender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "500000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "transfers": [],
+        "fee_deductions": [],
+        "review_candidates": [
+          {
+            "tx_hash": "057AC5675D7036873F9FC261654EBA14BFF6D2403D1FAFC071C6760B5F8A1843",
+            "message_index": 0,
+            "event_index": 1,
+            "op_index": 65538,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "amount_base_units": "500000"
+          }
+        ],
+        "block_events": []
+      }
+    },
+    {
+      "id": "three-event-family-single-review",
+      "description": "one external→customer movement emits ALL THREE bank events (coin_spent + coin_received + transfer) for the same msg_index/amount: coin_spent names the unwatched sender (no OUT candidate), the coin_received IN view is suppressed by the transfer, and exactly ONE IN review candidate is emitted from the transfer family (counterparty=sender) — the full event family collapses to a single review row so the expected balance is not tripled (PR #300)",
+      "block": {
+        "height": 117,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB75",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD74",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "Co8BCowBCh0vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnRXhlYxJrCitzb3ZyMTlybDRjbTJobXI4YWZ5NGtsZHB4ejNma2E0amd1cTBhZXM4MjR4Eitzb3ZyMWtuZzd0djgzcWVzZ3Z2MnplN2h4bHc0dXJmcmprOHZxOXJ0aDhjGg8KBXVzb3ZyEgY1MDAwMDAaAQE="
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0,
+          "events": [
+            {
+              "type": "coin_spent",
+              "attributes": [
+                {
+                  "key": "spender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "500000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_received",
+              "attributes": [
+                {
+                  "key": "receiver",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                },
+                {
+                  "key": "amount",
+                  "value": "500000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "transfer",
+              "attributes": [
+                {
+                  "key": "recipient",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                },
+                {
+                  "key": "sender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "500000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "transfers": [],
+        "fee_deductions": [],
+        "review_candidates": [
+          {
+            "tx_hash": "057AC5675D7036873F9FC261654EBA14BFF6D2403D1FAFC071C6760B5F8A1843",
+            "message_index": 0,
+            "event_index": 2,
+            "op_index": 65540,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "amount_base_units": "500000"
+          }
+        ],
+        "block_events": []
+      }
+    },
+    {
+      "id": "dup-finalize-family-single-block-event",
+      "description": "block-scoped movement emits BOTH coin_received and transfer for the same address/amount: exactly one IN block event — the transfer view wins, the coin_received duplicate is dropped (PR #300)",
+      "block": {
+        "height": 115,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB73",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD72",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": []
+      },
+      "tx_results": null,
+      "finalize_block_events": [
+        {
+          "type": "coin_received",
+          "attributes": [
+            {
+              "key": "receiver",
+              "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+            },
+            {
+              "key": "amount",
+              "value": "6000usovr"
+            }
+          ]
+        },
+        {
+          "type": "transfer",
+          "attributes": [
+            {
+              "key": "recipient",
+              "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+            },
+            {
+              "key": "sender",
+              "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            },
+            {
+              "key": "amount",
+              "value": "6000usovr"
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "transfers": [],
+        "fee_deductions": [],
+        "review_candidates": [],
+        "block_events": [
+          {
+            "event_index": 2,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "amount_base_units": "6000"
+          }
+        ]
+      }
+    },
+    {
+      "id": "feegrant-used",
+      "description": "use_feegrant present: the granter is the recorded fee payer",
+      "block": {
+        "height": 112,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB70",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD6f",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "CosBCogBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmgKK3NvdnIxa25nN3R2ODNxZXNndnYyemU3aHhsdzR1cmZyams4dnE5cnRoOGMSK3NvdnIxMmVjeXVkZGc0d2xuaHp0dXNnanU1enh4amd6bmt6N2Y0ZTdmdW4aDAoFdXNvdnISAzEwMBJBEj8KDAoFdXNvdnISAzI1MBCgjQYiK3NvdnIxbmV5eTNsZjdramZzOHBtNTg4MGc2aGpnbHRuZ3U2OXE2NXRwbWUaAQE="
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0,
+          "events": [
+            {
+              "type": "use_feegrant",
+              "attributes": [
+                {
+                  "key": "granter",
+                  "value": "sovr1neyy3lf7kjfs8pm5880g6hjgltngu69q65tpme"
+                },
+                {
+                  "key": "grantee",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                }
+              ]
+            },
+            {
+              "type": "tx",
+              "attributes": [
+                {
+                  "key": "fee",
+                  "value": "250usovr"
+                },
+                {
+                  "key": "fee_payer",
+                  "value": "sovr1neyy3lf7kjfs8pm5880g6hjgltngu69q65tpme"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "transfers": [
+          {
+            "tx_hash": "36F61F2DC94A52F2BCC97E8960AA8373BAE8BC9BFC14B77C0B5A9A6E34DBBBEB",
+            "message_index": 0,
+            "coin_index": 0,
+            "op_index": 0,
+            "direction": "IN",
+            "address": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun",
+            "counterparty_set": [
+              "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+            ],
+            "sender_address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "denom": "usovr",
+            "amount_base_units": "100",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "SWEEP",
+            "review_reason": ""
+          },
+          {
+            "tx_hash": "36F61F2DC94A52F2BCC97E8960AA8373BAE8BC9BFC14B77C0B5A9A6E34DBBBEB",
+            "message_index": 0,
+            "coin_index": 0,
+            "op_index": 1,
+            "direction": "OUT",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun"
+            ],
+            "sender_address": null,
+            "denom": "usovr",
+            "amount_base_units": "100",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "SWEEP",
+            "review_reason": ""
+          }
+        ],
+        "fee_deductions": [
+          {
+            "tx_hash": "36F61F2DC94A52F2BCC97E8960AA8373BAE8BC9BFC14B77C0B5A9A6E34DBBBEB",
+            "payer_address": "sovr1neyy3lf7kjfs8pm5880g6hjgltngu69q65tpme",
+            "fee_base_units": "250",
+            "tx_code": 0,
+            "fee_granter_used": true
+          }
+        ],
+        "review_candidates": [],
+        "block_events": []
+      }
+    }
+  ]
+}

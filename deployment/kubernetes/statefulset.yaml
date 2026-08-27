@@ -1,0 +1,115 @@
+# Sovren exchange full node — StatefulSet example.
+#
+# Runs one non-validating full node from a prebuilt release bundle mounted as
+# a ConfigMap (see configmap.example.yaml). The node never creates or mutates
+# chain state at runtime and never holds signing keys.
+#
+# Apply into a namespace of your choice:
+#   kubectl -n <your-namespace> apply -f configmap.example.yaml -f services.yaml -f statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sovren-node
+  labels:
+    app.kubernetes.io/name: sovren-node
+    app.kubernetes.io/component: blockchain
+spec:
+  serviceName: sovren-node-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sovren-node
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sovren-node
+        app.kubernetes.io/component: blockchain
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "26660"
+    spec:
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      initContainers:
+        - name: seed-release-bundle
+          # Pin by digest; the per-release digest is published with the node
+          # release at sovrn-tech/sovr-networks and verifiable against the
+          # public ghcr.io/sovrn-tech/sovrd package.
+          image: ghcr.io/sovrn-tech/sovrd@sha256:2d2fbb8f48986b5ced9ca01ad515b41e5c34844ef43ba77ceb252ab938ecb396 # injected at kit release (plan D4)
+          imagePullPolicy: IfNotPresent
+          args: ["seed-bundle"]
+          volumeMounts:
+            - name: sovren-data
+              mountPath: /home/sovr/.sovr
+            - name: release-bundle
+              mountPath: /etc/sovr/release
+              readOnly: true
+      containers:
+        - name: sovren-node
+          image: ghcr.io/sovrn-tech/sovrd@sha256:2d2fbb8f48986b5ced9ca01ad515b41e5c34844ef43ba77ceb252ab938ecb396 # injected at kit release (plan D4)
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: sovren-node-config
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            # Replace with your public DNS/IP when peers must dial back;
+            # a pod IP is only correct when it is publicly routable.
+            - name: EXTERNAL_ADDRESS
+              value: "tcp://$(POD_IP):26656"
+          ports:
+            - { name: p2p, containerPort: 26656, protocol: TCP }
+            - { name: rpc, containerPort: 26657, protocol: TCP }
+            - { name: rest, containerPort: 1317, protocol: TCP }
+            - { name: grpc, containerPort: 9090, protocol: TCP }
+            - { name: prometheus, containerPort: 26660, protocol: TCP }
+          volumeMounts:
+            - name: sovren-data
+              mountPath: /home/sovr/.sovr
+            - name: release-bundle
+              mountPath: /etc/sovr/release
+              readOnly: true
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+          livenessProbe:
+            httpGet: { path: /status, port: rpc }
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet: { path: /status, port: rpc }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+          startupProbe:
+            httpGet: { path: /status, port: rpc }
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            failureThreshold: 60
+      volumes:
+        - name: release-bundle
+          configMap:
+            name: sovren-release-bundle
+  volumeClaimTemplates:
+    - metadata:
+        name: sovren-data
+        labels:
+          app.kubernetes.io/name: sovren-node
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 100Gi
+        # storageClassName: <your SSD-backed class>

@@ -1,0 +1,48 @@
+# Sovren exchange full node — node configuration.
+#
+# Values mirror the compose profile (../docker-compose/docker-compose.yml);
+# SEEDS / PERSISTENT_PEERS come from network/<net>/peers.txt.
+#
+# The release bundle itself (genesis.json + checksums.txt + seeds.txt) must be
+# loaded into a second ConfigMap named `sovren-release-bundle`:
+#   kubectl -n <ns> create configmap sovren-release-bundle \
+#     --from-file=genesis.json --from-file=checksums.txt --from-file=seeds.txt
+# Verify first: sha256sum genesis.json == network/<net>/genesis.sha256.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sovren-node-config
+  labels:
+    app.kubernetes.io/name: sovren-node
+data:
+  DEPLOYMENT_ENVIRONMENT: "mainnet"
+  CHAIN_ID: "sovr-1"
+  MONIKER: "sovren-exchange-fullnode"
+  MINIMUM_GAS_PRICES: "0.001usovr"
+  ENABLE_INIT_HELPERS: "false"
+  SIGNER_MODE: "disabled"
+  KEYRING_BACKEND: "test"
+  GENESIS_FILE_PATH: "/home/sovr/.sovr/config/genesis.json"
+  RELEASE_BUNDLE_DIR: "/etc/sovr/release"
+  RELEASE_BUNDLE_CHECKSUMS: "/etc/sovr/release/checksums.txt"
+  RELEASE_BUNDLE_LAUNCH_PLAN: "/etc/sovr/release/launch.env"
+  CANONICAL_SEEDS_FILE: "/etc/sovr/release/seeds.txt"
+  SEEDS: "381af5e4d0d5e24af3bb4d506b06081399622d01@seed1.mainnet.sovrchain.net:32000,68d9058a5dd7062d72d917ae8f2a2e30101b5a74@seed2.mainnet.sovrchain.net:32001"
+  PERSISTENT_PEERS: "24ebffde61a15df70687df28d9d9259dcb4beb64@sentry1a.mainnet.sovrchain.net:32200,6ee852fb24a636109f49a6b7184c8533d60d71ae@sentry1b.mainnet.sovrchain.net:32201,f9f287196905f574334d87370ee28369814a01eb@sentry2a.mainnet.sovrchain.net:32220,d41608b237019c09281c9542bbe90532b03b65ea@sentry2b.mainnet.sovrchain.net:32221,b8c805f050e090edf52fcd5169e239826ffb21a5@sentry3a.mainnet.sovrchain.net:32240,a49544b198f062c893b849a37389a227a51b40d4@sentry3b.mainnet.sovrchain.net:32241"
+  PRUNING: "default"
+  MIN_RETAIN_BLOCKS: "0"
+  DISCARD_ABCI_RESPONSES: "false"
+  TX_INDEX: "kv"
+  MEMPOOL_TYPE: "flood"
+  RPC_MAX_OPEN_CONNECTIONS: "200"
+  IAVL_CACHE_SIZE: "50000"
+  INTER_BLOCK_CACHE: "true"
+  SNAPSHOT_INTERVAL: "0"
+  SNAPSHOT_KEEP_RECENT: "0"
+  API_ENABLE: "true"
+  GRPC_ENABLE: "true"
+  GRPC_WEB_ENABLE: "false"
+  ENABLE_SWAGGER: "false"
+  PROMETHEUS_ENABLE: "true"
+  GOMEMLIMIT: "3400MiB"
+  GOGC: "75"

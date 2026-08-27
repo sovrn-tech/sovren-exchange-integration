@@ -1,0 +1,3 @@
+# Generated from network.yaml by sovren-manifest; do not edit.
+SEEDS=d5e5770e1198b6ab66dcf7bfadb90610e82bf6cd@seed1.testnet.sovrchain.net:32000,c24ded42a0026b4d912d8576b3d84d3c690b2d02@seed2.testnet.sovrchain.net:32001
+PERSISTENT_PEERS=2dae62e74b0b175e7d905eeaca530464de8d8183@sentry1a.testnet.sovrchain.net:32200,5a5dca65a8fa75d66a65eca470d2c88d3c1c2703@sentry1b.testnet.sovrchain.net:32201,70ac5c238c5f83d6ef7480f64ec5c22d29364797@sentry2a.testnet.sovrchain.net:32220,c5385795047ac6a11d3328362033721ed3213657@sentry2b.testnet.sovrchain.net:32221,8cfacb1a936e3b848923a6fe631690336dc7717e@sentry3a.testnet.sovrchain.net:32240,dbf89f924f158c77222343d322e57eb1042b0a4c@sentry3b.testnet.sovrchain.net:32241

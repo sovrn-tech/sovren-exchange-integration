@@ -1,0 +1,1101 @@
+{
+  "app_name": "sovrd",
+  "app_version": "v0.4.0",
+  "genesis_time": "2026-05-06T23:58:44.081684091Z",
+  "chain_id": "sovr-1",
+  "initial_height": 1,
+  "app_hash": null,
+  "app_state": {
+    "06-solomachine": null,
+    "07-tendermint": null,
+    "attestation": {
+      "params": {
+        "min_receipt_interval_seconds": "60",
+        "max_receipt_age_seconds": "2592000",
+        "merkle_batch_size": 100,
+        "min_attestation_score": "10.000000000000000000",
+        "slash_fraction_fraudulent": "0.050000000000000000",
+        "triton_endpoint": "",
+        "manta_endpoint": "",
+        "edgecast_endpoint": "",
+        "parler_endpoint": "",
+        "receipt_verification_quorum": 3
+      },
+      "receipts": [],
+      "merkle_batches": [],
+      "operator_scores": [],
+      "pending_challenges": []
+    },
+    "auction": {
+      "params": {
+        "per_wallet_cap": 200,
+        "dutch_duration_seconds": "259200",
+        "tranche_count": 10,
+        "nodes_per_tranche": 1000,
+        "activation_bond_bps": 0,
+        "max_fleet_size": 10000
+      },
+      "tranche_seeds": [
+        {
+          "tranche_id": 1,
+          "nodes": 1000,
+          "kind": "TRANCHE_KIND_FIXED_PRICE",
+          "opening_price_usd_cents": "300000",
+          "floor_price_usd_cents": "300000",
+          "status": "TRANCHE_LIFECYCLE_UNSPECIFIED",
+          "opened_at_unix": "0",
+          "cleared_at_unix": "0",
+          "sold_count": 0
+        },
+        {
+          "tranche_id": 2,
+          "nodes": 1000,
+          "kind": "TRANCHE_KIND_FIXED_PRICE",
+          "opening_price_usd_cents": "300000",
+          "floor_price_usd_cents": "300000",
+          "status": "TRANCHE_LIFECYCLE_UNSPECIFIED",
+          "opened_at_unix": "0",
+          "cleared_at_unix": "0",
+          "sold_count": 0
+        },
+        {
+          "tranche_id": 3,
+          "nodes": 1000,
+          "kind": "TRANCHE_KIND_DUTCH_DECAY",
+          "opening_price_usd_cents": "600000",
+          "floor_price_usd_cents": "350000",
+          "status": "TRANCHE_LIFECYCLE_UNSPECIFIED",
+          "opened_at_unix": "0",
+          "cleared_at_unix": "0",
+          "sold_count": 0
+        },
+        {
+          "tranche_id": 4,
+          "nodes": 1000,
+          "kind": "TRANCHE_KIND_DUTCH_DECAY",
+          "opening_price_usd_cents": "750000",
+          "floor_price_usd_cents": "400000",
+          "status": "TRANCHE_LIFECYCLE_UNSPECIFIED",
+          "opened_at_unix": "0",
+          "cleared_at_unix": "0",
+          "sold_count": 0
+        },
+        {
+          "tranche_id": 5,
+          "nodes": 1000,
+          "kind": "TRANCHE_KIND_DUTCH_DECAY",
+          "opening_price_usd_cents": "900000",
+          "floor_price_usd_cents": "450000",
+          "status": "TRANCHE_LIFECYCLE_UNSPECIFIED",
+          "opened_at_unix": "0",
+          "cleared_at_unix": "0",
+          "sold_count": 0
+        },
+        {
+          "tranche_id": 6,
+          "nodes": 1000,
+          "kind": "TRANCHE_KIND_DUTCH_DECAY",
+          "opening_price_usd_cents": "1100000",
+          "floor_price_usd_cents": "500000",
+          "status": "TRANCHE_LIFECYCLE_UNSPECIFIED",
+          "opened_at_unix": "0",
+          "cleared_at_unix": "0",
+          "sold_count": 0
+        },
+        {
+          "tranche_id": 7,
+          "nodes": 1000,
+          "kind": "TRANCHE_KIND_DUTCH_DECAY",
+          "opening_price_usd_cents": "1300000",
+          "floor_price_usd_cents": "550000",
+          "status": "TRANCHE_LIFECYCLE_UNSPECIFIED",
+          "opened_at_unix": "0",
+          "cleared_at_unix": "0",
+          "sold_count": 0
+        },
+        {
+          "tranche_id": 8,
+          "nodes": 1000,
+          "kind": "TRANCHE_KIND_DUTCH_DECAY",
+          "opening_price_usd_cents": "1500000",
+          "floor_price_usd_cents": "600000",
+          "status": "TRANCHE_LIFECYCLE_UNSPECIFIED",
+          "opened_at_unix": "0",
+          "cleared_at_unix": "0",
+          "sold_count": 0
+        },
+        {
+          "tranche_id": 9,
+          "nodes": 1000,
+          "kind": "TRANCHE_KIND_DUTCH_DECAY",
+          "opening_price_usd_cents": "1750000",
+          "floor_price_usd_cents": "650000",
+          "status": "TRANCHE_LIFECYCLE_UNSPECIFIED",
+          "opened_at_unix": "0",
+          "cleared_at_unix": "0",
+          "sold_count": 0
+        },
+        {
+          "tranche_id": 10,
+          "nodes": 1000,
+          "kind": "TRANCHE_KIND_DUTCH_DECAY",
+          "opening_price_usd_cents": "2000000",
+          "floor_price_usd_cents": "700000",
+          "status": "TRANCHE_LIFECYCLE_UNSPECIFIED",
+          "opened_at_unix": "0",
+          "cleared_at_unix": "0",
+          "sold_count": 0
+        }
+      ],
+      "t01_allowlist": [],
+      "wallet_bid_counts": [],
+      "current_tranche_id": 0
+    },
+    "auth": {
+      "params": {
+        "max_memo_characters": "256",
+        "tx_sig_limit": "7",
+        "tx_size_cost_per_byte": "10",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000"
+      },
+      "accounts": [
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "sovr1l37zgj42xawx25ax2fh3lh5l20sh60gqxs49sw",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "sovr1yexzdl8vlcs3epy3xculvxswvcz7q0wzkshnyy",
+          "pub_key": null,
+          "account_number": "1",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "sovr1dw0n86xhsqjql9zu3ed565qftyn02peaexg447",
+          "pub_key": null,
+          "account_number": "2",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "sovr1ysz3czaxtfzj2ela7h78ka9zwn60fxh8knd8x0",
+          "pub_key": null,
+          "account_number": "3",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "sovr15cctule8dy40kxczmwplxzawnjee2wn3mu6g3t",
+          "pub_key": null,
+          "account_number": "4",
+          "sequence": "0"
+        }
+      ]
+    },
+    "authz": {
+      "authorization": []
+    },
+    "bandwidth": {
+      "params": {
+        "min_host_stake": "100000000",
+        "min_stake_per_gib_sec_usovr": "0",
+        "session_expiry_max_blocks": "1152000",
+        "max_region_bytes": 128,
+        "max_endpoint_bytes": 512,
+        "slash_fraction_bps": 500,
+        "dispute_tolerance_bps": 500
+      },
+      "hosts": [],
+      "sessions": [],
+      "next_session_id": "1"
+    },
+    "bank": {
+      "params": {
+        "send_enabled": [],
+        "default_send_enabled": true
+      },
+      "balances": [
+        {
+          "address": "sovr1ysz3czaxtfzj2ela7h78ka9zwn60fxh8knd8x0",
+          "coins": [
+            {
+              "denom": "usovr",
+              "amount": "49970000000000"
+            }
+          ]
+        },
+        {
+          "address": "sovr1yexzdl8vlcs3epy3xculvxswvcz7q0wzkshnyy",
+          "coins": [
+            {
+              "denom": "usovr",
+              "amount": "10000000000"
+            }
+          ]
+        },
+        {
+          "address": "sovr1dw0n86xhsqjql9zu3ed565qftyn02peaexg447",
+          "coins": [
+            {
+              "denom": "usovr",
+              "amount": "10000000000"
+            }
+          ]
+        },
+        {
+          "address": "sovr15cctule8dy40kxczmwplxzawnjee2wn3mu6g3t",
+          "coins": [
+            {
+              "denom": "usovr",
+              "amount": "10000000000000"
+            }
+          ]
+        },
+        {
+          "address": "sovr1l37zgj42xawx25ax2fh3lh5l20sh60gqxs49sw",
+          "coins": [
+            {
+              "denom": "usovr",
+              "amount": "10000000000"
+            }
+          ]
+        }
+      ],
+      "supply": [
+        {
+          "denom": "usovr",
+          "amount": "60000000000000"
+        }
+      ],
+      "denom_metadata": [],
+      "send_enabled": []
+    },
+    "bootstrap": {
+      "params": {
+        "pool_cap_usovr": "10000000000000",
+        "tier1_multiplier_bps": 25000,
+        "tier2_multiplier_bps": 25000,
+        "tier3_multiplier_bps": 25000,
+        "tier1_end_seconds": "15552000",
+        "tier2_end_seconds": "31104000",
+        "tier3_end_seconds": "62208000"
+      },
+      "pool_remaining_usovr": "0",
+      "chain_start_unix": "0",
+      "node_matched": []
+    },
+    "bridge": {
+      "params": {
+        "ethereum_chain_id": "1",
+        "bridge_contract_address": "0x0000000000000000000000000000000000000000",
+        "min_bridge_amount": "1000000",
+        "bridge_fee_bps": 25,
+        "relayer_addresses": [],
+        "confirmation_blocks": "12",
+        "request_timeout_blocks": "50000",
+        "paused": false,
+        "relayer_quorum": 1,
+        "max_end_block_processing": 100,
+        "max_query_results": 1000
+      },
+      "bridge_requests": [],
+      "processed_ethereum_tx_hashes": [],
+      "next_request_id": "1"
+    },
+    "circuit": {
+      "account_permissions": [],
+      "disabled_type_urls": []
+    },
+    "consensus": null,
+    "disputebonds": {
+      "params": {
+        "bond_per_side_usovr": "100000000",
+        "forfeit_to_latent_bps": 5000
+      },
+      "open_bonds": []
+    },
+    "distribution": {
+      "params": {
+        "community_tax": "0.020000000000000000",
+        "base_proposer_reward": "0.000000000000000000",
+        "bonus_proposer_reward": "0.000000000000000000",
+        "withdraw_addr_enabled": true
+      },
+      "fee_pool": {
+        "community_pool": []
+      },
+      "delegator_withdraw_infos": [],
+      "previous_proposer": "",
+      "outstanding_rewards": [],
+      "validator_accumulated_commissions": [],
+      "validator_historical_rewards": [],
+      "validator_current_rewards": [],
+      "delegator_starting_infos": [],
+      "validator_slash_events": []
+    },
+    "distro": {
+      "params": {
+        "halving_interval_blocks": "1000000000000",
+        "initial_annual_emission": "0",
+        "operator_share_bps": 4000,
+        "infra_share_bps": 2000,
+        "treasury_share_bps": 2000,
+        "ecosystem_share_bps": 1000,
+        "treasury_address": "sovr1w3ex2ctnw4e8jcqxeas",
+        "ecosystem_address": "sovr1v43k7umewd6x2mgc7fm2f",
+        "blocks_per_day": "6400",
+        "infrastructure_address": "sovr1d9hxvunpwd68yatrw36hyegkcg393",
+        "staking_share_bps": 1000,
+        "staking_rewards_address": "sovr1wd6xz6mfden47un9washyernfsp9gs",
+        "chain_start_unix": "0",
+        "phase_bootstrap_months": 12,
+        "phase_scaling_months": 24,
+        "phase_bootstrap_track_b_cap_multiple": 2,
+        "phase_scaling_track_b_cap_multiple": 5,
+        "track_b_k_bps": 1,
+        "burn_parity_threshold_bps": 6000,
+        "burn_parity_window_days": 30,
+        "days_per_year": "365",
+        "track_a_tier0_daily_usovr": "50000000000",
+        "track_a_tier1_daily_usovr": "120000000000",
+        "track_a_tier2_daily_usovr": "190000000000",
+        "track_a_tier3_daily_usovr": "260000000000",
+        "track_a_tier1_threshold_bps": 2500,
+        "track_a_tier2_threshold_bps": 5000,
+        "track_a_tier3_threshold_bps": 7500,
+        "track_a_per_node_cap_multiplier": 10,
+        "track_b_daily_cap_usovr": "50000000000"
+      },
+      "current_block_emission": "0",
+      "current_cycle": "0",
+      "total_minted": "0",
+      "operator_rewards": [],
+      "attesting_ring_bps": []
+    },
+    "epochs": {
+      "epochs": [
+        {
+          "identifier": "day",
+          "start_time": "0001-01-01T00:00:00Z",
+          "duration": "86400s",
+          "current_epoch": "0",
+          "current_epoch_start_time": "0001-01-01T00:00:00Z",
+          "epoch_counting_started": false,
+          "current_epoch_start_height": "0"
+        },
+        {
+          "identifier": "hour",
+          "start_time": "0001-01-01T00:00:00Z",
+          "duration": "3600s",
+          "current_epoch": "0",
+          "current_epoch_start_time": "0001-01-01T00:00:00Z",
+          "epoch_counting_started": false,
+          "current_epoch_start_height": "0"
+        },
+        {
+          "identifier": "minute",
+          "start_time": "0001-01-01T00:00:00Z",
+          "duration": "60s",
+          "current_epoch": "0",
+          "current_epoch_start_time": "0001-01-01T00:00:00Z",
+          "epoch_counting_started": false,
+          "current_epoch_start_height": "0"
+        },
+        {
+          "identifier": "week",
+          "start_time": "0001-01-01T00:00:00Z",
+          "duration": "604800s",
+          "current_epoch": "0",
+          "current_epoch_start_time": "0001-01-01T00:00:00Z",
+          "epoch_counting_started": false,
+          "current_epoch_start_height": "0"
+        }
+      ]
+    },
+    "evidence": {
+      "evidence": []
+    },
+    "feegrant": {
+      "allowances": []
+    },
+    "gateway": {
+      "params": {
+        "min_host_stake": "100000000",
+        "session_expiry_max_blocks": "2592000",
+        "dispute_window_blocks": "17280",
+        "dispute_tolerance_bytes": "131072",
+        "dispute_tolerance_requests": "4",
+        "max_dispute_slash_bps": 500,
+        "dispute_claim_gravity_bps": 10000,
+        "dispute_filer_bond_usovr": "1000000",
+        "min_price_per_byte_usovr": "0",
+        "min_price_per_request_usovr": "0",
+        "max_regions_per_host": 16,
+        "max_endpoint_bytes": 2048,
+        "min_stake_per_gib_sec_usovr": "0",
+        "max_query_results": 1000
+      },
+      "hosts": [],
+      "sessions": [],
+      "evidence": [],
+      "disputes": [],
+      "next_session_id": "1",
+      "next_evidence_id": "1",
+      "next_dispute_id": "1"
+    },
+    "genutil": {
+      "gen_txs": [
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "validator-3",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.100000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "",
+                "validator_address": "sovrvaloper1dw0n86xhsqjql9zu3ed565qftyn02peawme0pl",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "kem5uRtYQXJcjmDSCv81nkindqvazXINgKOxRFrM6tY="
+                },
+                "value": {
+                  "denom": "usovr",
+                  "amount": "10000000000"
+                }
+              }
+            ],
+            "memo": "56ba6db4d905496ea8a9c33d54ed37efaa982c7c@10.0.2.15:26656",
+            "timeout_height": "0",
+            "unordered": false,
+            "timeout_timestamp": null,
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AzNkUxQSNpRzVyr2b3cMll0ey0L4WP39mqJqZXY5B1a6"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "wgILGkNaDDVs1E8c3vJ+mY71GpMwK6Q0l/CUX6bW8o16jsRKuS6ptFCrNA/uAbng5AkIRtGQsP1aywMbYPYZxQ=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "validator-1",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.100000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "",
+                "validator_address": "sovrvaloper1l37zgj42xawx25ax2fh3lh5l20sh60gq3dyly0",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "3M83gPBuLz7z8GhHwrTT6Snkw094lw5Bzs0f1+taIMQ="
+                },
+                "value": {
+                  "denom": "usovr",
+                  "amount": "10000000000"
+                }
+              }
+            ],
+            "memo": "882b94c0bff9afc251fe6bfaa7da985e2ff115f7@10.0.2.15:26656",
+            "timeout_height": "0",
+            "unordered": false,
+            "timeout_timestamp": null,
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A2x3tWaNJZtuR6tCE2AMus0uWpAXWp3QV/8Zwd1cdv00"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "kXDxdGB+Mdq21qm3y06zSHJL/0wRIkAD7TCDBIugWlZzwvMXze9l3Ku7U4kTklMF0JRRGNbvfe5jdcit0yj/Lw=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "validator-2",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.100000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "",
+                "validator_address": "sovrvaloper1yexzdl8vlcs3epy3xculvxswvcz7q0wzpdxfs9",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "/f2KkbbESPKPLqnItMMfFzdkk1z4xoWIRWb8Ig8ql/o="
+                },
+                "value": {
+                  "denom": "usovr",
+                  "amount": "10000000000"
+                }
+              }
+            ],
+            "memo": "c34f5044f139eb5f48fa946a1e3728f5f0767e79@10.0.2.15:26656",
+            "timeout_height": "0",
+            "unordered": false,
+            "timeout_timestamp": null,
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "ApyUNfX5uFuzolGTW4Nj8KrOQ/jLmwEL9EuoeTi7dgtD"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "vjXIIAXCPJTNGpfLmIIYMSTP00dh3z85m+AHz+kKGrF5w8xO8bdZ32bT+250Js6eKOIRS25D4dVebSccjJmjPw=="
+          ]
+        }
+      ]
+    },
+    "gov": {
+      "starting_proposal_id": "1",
+      "deposits": [],
+      "votes": [],
+      "proposals": [],
+      "deposit_params": null,
+      "voting_params": null,
+      "tally_params": null,
+      "params": {
+        "min_deposit": [
+          {
+            "denom": "usovr",
+            "amount": "10000000"
+          }
+        ],
+        "max_deposit_period": "172800s",
+        "voting_period": "172800s",
+        "quorum": "0.334000000000000000",
+        "threshold": "0.500000000000000000",
+        "veto_threshold": "0.334000000000000000",
+        "min_initial_deposit_ratio": "0.000000000000000000",
+        "proposal_cancel_ratio": "0.500000000000000000",
+        "proposal_cancel_dest": "",
+        "expedited_voting_period": "86400s",
+        "expedited_threshold": "0.667000000000000000",
+        "expedited_min_deposit": [
+          {
+            "denom": "usovr",
+            "amount": "50000000"
+          }
+        ],
+        "burn_vote_quorum": false,
+        "burn_proposal_deposit_prevote": false,
+        "burn_vote_veto": true,
+        "min_deposit_ratio": "0.010000000000000000"
+      },
+      "constitution": ""
+    },
+    "group": {
+      "group_seq": "0",
+      "groups": [],
+      "group_members": [],
+      "group_policy_seq": "0",
+      "group_policies": [],
+      "proposal_seq": "0",
+      "proposals": [],
+      "votes": []
+    },
+    "ibc": {
+      "client_genesis": {
+        "clients": [],
+        "clients_consensus": [],
+        "clients_metadata": [],
+        "params": {
+          "allowed_clients": [
+            "*"
+          ]
+        },
+        "create_localhost": false,
+        "next_client_sequence": "0"
+      },
+      "connection_genesis": {
+        "connections": [],
+        "client_connection_paths": [],
+        "next_connection_sequence": "0",
+        "params": {
+          "max_expected_time_per_block": "30000000000"
+        }
+      },
+      "channel_genesis": {
+        "channels": [],
+        "acknowledgements": [],
+        "commitments": [],
+        "receipts": [],
+        "send_sequences": [],
+        "recv_sequences": [],
+        "ack_sequences": [],
+        "next_channel_sequence": "0"
+      },
+      "client_v2_genesis": {
+        "counterparty_infos": []
+      },
+      "channel_v2_genesis": {
+        "acknowledgements": [],
+        "commitments": [],
+        "receipts": [],
+        "async_packets": [],
+        "send_sequences": []
+      }
+    },
+    "identity": {
+      "params": {
+        "registration_deposit_usovr": "50000000",
+        "verifier_authority_mode": "VERIFIER_AUTHORITY_MODE_GOV_ALLOWLIST",
+        "allowed_verifiers": [],
+        "global_revokers": [],
+        "max_display_name_bytes": 128,
+        "max_capabilities_per_identity": 32,
+        "max_capability_bytes": 64,
+        "max_signals_per_identity": 256,
+        "max_signal_weight": "10000",
+        "max_query_results": 1000
+      },
+      "identities": [],
+      "verifications": [],
+      "reputations": [],
+      "revocations": [],
+      "next_identity_id": "1",
+      "deposits": []
+    },
+    "inference": {
+      "params": {
+        "min_host_stake": "100000000",
+        "session_expiry_max_blocks": "1152000",
+        "max_models_per_host": 128,
+        "benchmark_max_age_blocks": "192000",
+        "max_model_name_bytes": 256,
+        "max_rates_per_update": 128,
+        "benchmark_slash_fraction_bps": 500,
+        "benchmark_dispute_tolerance_bps": 5000,
+        "min_stake_per_tok_sec_usovr": "0"
+      },
+      "models": [],
+      "hosts": [],
+      "sessions": [],
+      "benchmarks": [],
+      "next_model_id": "1",
+      "next_session_id": "1",
+      "next_benchmark_id": "1"
+    },
+    "interchainaccounts": {
+      "controller_genesis_state": {
+        "active_channels": [],
+        "interchain_accounts": [],
+        "ports": [],
+        "params": {
+          "controller_enabled": true
+        }
+      },
+      "host_genesis_state": {
+        "active_channels": [],
+        "interchain_accounts": [],
+        "port": "icahost",
+        "params": {
+          "host_enabled": true,
+          "allow_messages": [
+            "*"
+          ]
+        }
+      }
+    },
+    "lockup": {
+      "params": {
+        "lock_duration_seconds": "15552000",
+        "unbonding_duration_seconds": "3888000",
+        "early_unlock_penalty_bps": 0,
+        "vesting_duration_seconds": "15552000",
+        "initial_claimable_bps": 0,
+        "forfeit_reemission_blocks": "2336000",
+        "max_end_block_processing": 100,
+        "max_query_results": 1000
+      },
+      "locks": [],
+      "unbonding_entries": [],
+      "unbonding_lock_mappings": [],
+      "vesting_positions": [],
+      "forfeit_pool": "0"
+    },
+    "nft": {
+      "classes": [],
+      "entries": []
+    },
+    "nodelicense": {
+      "params": {
+        "max_licenses": 10000,
+        "license_price": "0",
+        "license_activation_delay_blocks": "100",
+        "min_stake_for_validator": "10000000000",
+        "validator_committee_size": 100,
+        "storage_tiers": [
+          {
+            "tier_id": 1,
+            "name": "Starter",
+            "storage_bytes": "536870912000",
+            "price": "1000000000"
+          },
+          {
+            "tier_id": 2,
+            "name": "Standard",
+            "storage_bytes": "2199023255552",
+            "price": "1000000000"
+          },
+          {
+            "tier_id": 3,
+            "name": "Enterprise",
+            "storage_bytes": "10995116277760",
+            "price": "1000000000"
+          }
+        ],
+        "transfer_lockup_blocks": "2338560",
+        "activation_bond_bps": 0
+      },
+      "licenses": [],
+      "next_license_id": "0",
+      "validator_committee": []
+    },
+    "opt_exchange": {
+      "params": {
+        "active": false,
+        "rate_per_opt_usovr": "0",
+        "allowed_recipients": [],
+        "reserve_cap_usovr": "50000000000000"
+      },
+      "claimed_usovr": "0"
+    },
+    "oracle": {
+      "params": {
+        "twap_window_seconds": "900",
+        "variance_threshold_bps": 500,
+        "min_feeders": 3,
+        "bootstrap_price_usd_micros": "100000"
+      },
+      "feed_prices": [],
+      "state": {
+        "current_usd_micros_per_sovr": "0",
+        "anchor_usd_micros_per_sovr": "0",
+        "last_consensus_at_unix": "0",
+        "last_evaluated_at_unix": "0",
+        "active_feeders": 0,
+        "paused": false,
+        "pause_reason": ""
+      },
+      "allowed_feeders": []
+    },
+    "params": null,
+    "payments": {
+      "params": {
+        "dispute_window_blocks": "120",
+        "default_channel_expiry_blocks": "17280",
+        "max_query_results": 1000
+      },
+      "channels": [],
+      "participants": [],
+      "next_channel_id": "1"
+    },
+    "policy": {
+      "params": {
+        "max_domain_bytes": 256,
+        "max_prefix_prices": 64,
+        "max_content_prefix_bytes": 512,
+        "max_tier_criteria": 32,
+        "max_tier_name_bytes": 64,
+        "max_trusted_identity_products": 16,
+        "max_tier_multipliers": 32,
+        "max_subscription_prefixes": 64,
+        "max_revocation_reason_bytes": 512,
+        "max_registered_domains_per_admin": 64,
+        "registration_deposit_usovr": "100000000",
+        "max_query_results": 1000
+      },
+      "providers": [],
+      "subscriptions": [],
+      "revocations": [],
+      "deposits": []
+    },
+    "runtime": null,
+    "settlement": {
+      "params": {
+        "burn_bps": 5000,
+        "operator_bps": 2500,
+        "company_bps": 2500,
+        "company_infra_bps": 4000,
+        "company_ecosystem_bps": 4000,
+        "company_dao_bps": 1000,
+        "company_staking_bps": 1000,
+        "infra_address": "sovr1d9hxvunpwd68yatrw36hyegkcg393",
+        "ecosystem_address": "sovr1v43k7umewd6x2mgc7fm2f",
+        "dao_address": "sovr1v3sk7tt5wfjkzum4wfus73lvt5",
+        "staking_address": "sovr1wd6xz6mfden47un9washyernfsp9gs"
+      }
+    },
+    "slashing": {
+      "params": {
+        "signed_blocks_window": "100",
+        "min_signed_per_window": "0.500000000000000000",
+        "downtime_jail_duration": "600s",
+        "slash_fraction_double_sign": "0.050000000000000000",
+        "slash_fraction_downtime": "0.010000000000000000"
+      },
+      "signing_infos": [],
+      "missed_blocks": []
+    },
+    "staking": {
+      "params": {
+        "unbonding_time": "1814400s",
+        "max_validators": 100,
+        "max_entries": 7,
+        "historical_entries": 10000,
+        "bond_denom": "usovr",
+        "min_commission_rate": "0.000000000000000000"
+      },
+      "last_total_power": "0",
+      "last_validator_powers": [],
+      "validators": [],
+      "delegations": [],
+      "unbonding_delegations": [],
+      "redelegations": [],
+      "exported": false
+    },
+    "storage": {
+      "params": {
+        "challenge_interval_blocks": "100",
+        "proof_deadline_blocks": "50",
+        "min_host_stake": "100000000",
+        "max_shard_fraction_bps": 3000,
+        "slash_fraction_miss_bps": 100,
+        "max_challenges_per_block": 50,
+        "min_deal_duration_blocks": "6400",
+        "proof_segment_size_bytes": 65536,
+        "upload_price_per_gib_block_usovr": "10",
+        "download_price_per_gib_usovr": "100000",
+        "max_deal_duration_blocks": "46720000",
+        "renewal_window_blocks": "6400",
+        "default_renewal_duration_blocks": "1152000",
+        "challenge_seed_lookback_blocks": "10",
+        "hot": {
+          "challenge_interval_blocks": "100",
+          "proof_deadline_blocks": "50",
+          "slash_fraction_miss_bps": 100,
+          "upload_price_per_gib_block_usovr": "10",
+          "download_price_per_gib_usovr": "100000",
+          "min_deal_duration_blocks": "6400",
+          "max_deal_duration_blocks": "11680000"
+        },
+        "cold": {
+          "challenge_interval_blocks": "1000",
+          "proof_deadline_blocks": "250",
+          "slash_fraction_miss_bps": 50,
+          "upload_price_per_gib_block_usovr": "1",
+          "download_price_per_gib_usovr": "100000",
+          "min_deal_duration_blocks": "1152000",
+          "max_deal_duration_blocks": "46720000"
+        },
+        "min_stake_per_gib_usovr": "0",
+        "max_query_results": 1000
+      },
+      "hosts": [],
+      "deals": [],
+      "shard_assignments": [],
+      "challenges": [],
+      "next_deal_id": "1",
+      "next_challenge_id": "1",
+      "escrow_deposits": [],
+      "retrieval_sessions": [],
+      "next_retrieval_session_id": "1"
+    },
+    "supply": {
+      "params": {},
+      "latent_usovr": "940000000000000",
+      "locked_usovr": "0",
+      "vesting_usovr": "0",
+      "claimed_usovr": "60000000000000",
+      "latent_sub_buckets": [
+        {
+          "name": "protocol_emissions",
+          "usovr": "730000000000000"
+        },
+        {
+          "name": "bootstrap_rewards",
+          "usovr": "150000000000000"
+        },
+        {
+          "name": "opt_exchange",
+          "usovr": "50000000000000"
+        },
+        {
+          "name": "node_revenue_match",
+          "usovr": "10000000000000"
+        }
+      ]
+    },
+    "testfixtures": {},
+    "track_a": {
+      "params": {
+        "bootstrap_reserve_usovr": "150000000000000"
+      },
+      "reserve_drained_usovr": "0"
+    },
+    "transfer": {
+      "port_id": "transfer",
+      "denoms": [],
+      "params": {
+        "send_enabled": true,
+        "receive_enabled": true
+      },
+      "total_escrowed": []
+    },
+    "upgrade": {},
+    "vectordb": {
+      "params": {
+        "min_host_stake": "100000000",
+        "session_expiry_max_blocks": "1152000",
+        "max_collections_per_host": 4096,
+        "max_collections_per_client": 256,
+        "max_collection_name_bytes": 256,
+        "max_vector_dimension": 16384,
+        "slash_fraction_bps": 500,
+        "dispute_tolerance_bps": 5000,
+        "min_stake_per_vec_block_usovr": "0"
+      },
+      "hosts": [],
+      "collections": [],
+      "sessions": [],
+      "next_collection_id": "1",
+      "next_session_id": "1"
+    },
+    "vesting": {},
+    "wasm": {
+      "params": {
+        "code_upload_access": {
+          "permission": "Everybody",
+          "addresses": []
+        },
+        "instantiate_default_permission": "Everybody"
+      },
+      "codes": [],
+      "contracts": [],
+      "sequences": []
+    }
+  },
+  "consensus": {
+    "params": {
+      "block": {
+        "max_bytes": "22020096",
+        "max_gas": "-1"
+      },
+      "evidence": {
+        "max_age_num_blocks": "100000",
+        "max_age_duration": "172800000000000",
+        "max_bytes": "1048576"
+      },
+      "validator": {
+        "pub_key_types": [
+          "ed25519"
+        ]
+      },
+      "version": {
+        "app": "0"
+      },
+      "abci": {
+        "vote_extensions_enable_height": "0"
+      }
+    }
+  }
+}

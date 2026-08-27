@@ -1,0 +1,27 @@
+# Sovren Exchange Integration Kit — node-level alert rules
+# (contracts/metrics.md rows PeerCountLow and DiskUsageHigh). These evaluate
+# metrics from the SOVR node's CometBFT endpoint (:26660/metrics) and
+# node-exporter, not from the adapter.
+
+groups:
+  - name: sovren-node
+    rules:
+      - alert: PeerCountLow
+        expr: cometbft_p2p_peers < 2
+        for: 5m
+        labels:
+          severity: warn
+        annotations:
+          summary: "Node peer count below 2"
+          description: "The SOVR node has {{ $value }} peers. Check seeds/persistent_peers and network reachability (docs/node-operations.md)."
+
+      - alert: DiskUsageHigh
+        expr: >
+          (1 - node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"}
+             / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"}) * 100 > 85
+        for: 10m
+        labels:
+          severity: warn
+        annotations:
+          summary: "Node disk usage above 85%"
+          description: "Filesystem {{ $labels.mountpoint }} is {{ $value | printf \"%.0f\" }}% full. Chain data growth will halt the node when the disk fills."

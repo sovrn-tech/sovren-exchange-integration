@@ -1,0 +1,97 @@
+// Proto contract for x/txquery — chain-side merged sender-OR-recipient tx query.
+// This file is the canonical contract; the real file in proto/sovr/txquery/v1/query.proto
+// during implementation is copied from this one.
+
+syntax = "proto3";
+
+package sovr.txquery.v1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/tx/v1beta1/service.proto";
+import "cosmos/tx/v1beta1/tx.proto";
+import "cosmos/base/abci/v1beta1/abci.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/sovrn-tech/sovren-exchange-integration/go/gen/sovr/txquery/v1;txqueryv1";
+
+// Query is the gRPC service exposed by x/txquery.
+service Query {
+  // GetTxsByAddress returns every transaction in which the given address
+  // appears as sender OR recipient, merged from two underlying CometBFT
+  // tx_search queries (message.sender and transfer.recipient), deduplicated
+  // by transaction hash, and sorted by (block_height, tx_index) in the
+  // requested direction.
+  //
+  // The response is structurally identical to cosmos.tx.v1beta1.GetTxsEventResponse:
+  // a consumer already parsing GetTxsEvent responses can parse this response
+  // with no code change. See spec FR-005a / SC-006.
+  //
+  // The 2-term sender-OR-recipient disjunction is fixed. General OR grammar,
+  // additional disjuncts, and mixed AND/OR composition are out of scope.
+  rpc GetTxsByAddress(GetTxsByAddressRequest) returns (GetTxsByAddressResponse) {
+    option (google.api.http).get = "/parler-tech/sovr/txquery/v1/txs/by_address/{address}";
+  }
+}
+
+// GetTxsByAddressRequest is the request type for Query/GetTxsByAddress.
+message GetTxsByAddressRequest {
+  // address is the bech32-encoded account address of interest.
+  // Required. Must match the chain's account address bech32 prefix.
+  string address = 1;
+
+  // pagination defines an optional pagination for the merged result set.
+  // Semantics:
+  // - If unset: limit=100, count_total=false.
+  // - limit is clamped server-side to [1, 1000]. The handler issues
+  //   enough underlying CometBFT tx_search pages per side to attempt
+  //   to fill the requested limit; very large limits may still return
+  //   fewer items per request when the cross-stream safety boundary
+  //   trims emission (see docs/modules/txquery.md "How it works").
+  // - next_key, when non-empty, is the opaque composite cursor
+  //   returned by the previous call. Pass it back verbatim. Treat as
+  //   bytes; schema is not stable across chain releases.
+  // - offset is IGNORED. Pagination on this surface is cursor-driven
+  //   only; sending a non-zero offset has no effect.
+  // - count_total and reverse honored per upstream PageRequest semantics.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+
+  // order_by defines the direction of the (block_height, tx_index) sort.
+  // ORDER_BY_UNSPECIFIED is treated as ORDER_BY_ASC, matching
+  // cosmos.tx.v1beta1.GetTxsEventRequest.order_by.
+  cosmos.tx.v1beta1.OrderBy order_by = 3;
+
+  // start_date is an optional inclusive lower bound as YYYY-MM-DD (UTC calendar
+  // day). Resolved to a block-height floor before CometBFT tx_search so one
+  // request can return the window without multi-page client-side walks.
+  // Empty = no lower bound.
+  string start_date = 4;
+
+  // end_date is an optional inclusive upper bound as YYYY-MM-DD (UTC calendar
+  // day). Resolved to a block-height ceiling. Empty = no upper bound.
+  string end_date = 5;
+}
+
+// GetTxsByAddressResponse is the response type for Query/GetTxsByAddress.
+//
+// IMPORTANT — response shape: the field set, types, and ordering MUST remain
+// byte-for-byte structurally identical to cosmos.tx.v1beta1.GetTxsEventResponse.
+// This is a load-bearing contract (spec FR-005a / SC-006). Do not add fields,
+// rename fields, or change types here without first lifting that constraint
+// in the spec.
+message GetTxsByAddressResponse {
+  // txs is the list of merged transactions, ordered per order_by.
+  repeated cosmos.tx.v1beta1.Tx txs = 1;
+
+  // tx_responses is the list of per-tx result info, parallel to txs.
+  repeated cosmos.base.abci.v1beta1.TxResponse tx_responses = 2;
+
+  // pagination is the page response. next_key, when non-empty, is the
+  // opaque composite cursor for the next page. Treat as a blob; do not
+  // parse client-side.
+  cosmos.base.query.v1beta1.PageResponse pagination = 3;
+
+  // total is the count of all matching transactions, populated only when
+  // the request's pagination.count_total was true. Mirrors pagination.total
+  // for byte-for-byte parity with cosmos.tx.v1beta1.GetTxsEventResponse.
+  uint64 total = 4;
+}

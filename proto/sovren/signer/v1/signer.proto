@@ -1,0 +1,103 @@
+// sovren.signer.v1 — the kit's remote-signer wire contract (adapter
+// signer.kind "grpc-remote"). Carries exactly the PublicKeyRequest/Response
+// and SigningRequest/Response shapes of
+// specs/008-exchange-integration-kit/contracts/signer-interface.md; typed
+// signer errors travel as a gRPC status carrying a SignerErrorDetail.
+//
+// Kit-native namespace: sovren.* is distinct from the chain's sovr.* —
+// intentional; this service exists only between an adapter and an exchange's
+// signing system, never on chain.
+syntax = "proto3";
+
+package sovren.signer.v1;
+
+option go_package = "github.com/sovrn-tech/sovren-exchange-integration/go/gen/sovren/signer/v1;signerv1";
+
+// SignerService is implemented by the exchange's signing system. Production
+// deployments MUST front it with an authenticated, integrity-protected
+// transport (mTLS or equivalent); the shipped client refuses plaintext
+// unless explicitly configured for development.
+service SignerService {
+  // GetPublicKey resolves an opaque key handle to its compressed
+  // secp256k1 public key.
+  rpc GetPublicKey(GetPublicKeyRequest) returns (GetPublicKeyResponse);
+
+  // Sign signs SHA-256(sign_doc_bytes) with the referenced key and returns
+  // the 64-byte R||S low-S signature. sign_doc_bytes is authoritative;
+  // implementations MUST decode it and policy-check the decoded contents,
+  // refusing with SUMMARY_MISMATCH on any divergence from summary.
+  rpc Sign(SignRequest) returns (SignResponse);
+}
+
+// GetPublicKeyRequest identifies a key by an opaque exchange-side handle.
+message GetPublicKeyRequest {
+  string key_ref = 1;
+}
+
+// GetPublicKeyResponse returns the key's algorithm and compressed public key.
+message GetPublicKeyResponse {
+  string key_ref = 1;
+  // Always "secp256k1" in v1.
+  string algorithm = 2;
+  // 33 bytes, compressed.
+  bytes public_key_compressed = 3;
+}
+
+// SigningSummary is the human/machine-verifiable description of the sign
+// doc, derived from sign_doc_bytes by the builder. Display and
+// cross-checking only — never the signing authority. All numeric fields are
+// base-10 integer strings.
+message SigningSummary {
+  string chain_id = 1;
+  string account_number = 2;
+  string sequence = 3;
+  // Always "/cosmos.bank.v1beta1.MsgSend" in v1.
+  string message_type = 4;
+  string sender_address = 5;
+  string recipient_address = 6;
+  // Integer usovr string.
+  string amount_base_units = 7;
+  // Always "usovr" in v1.
+  string denom = 8;
+  string fee_base_units = 9;
+  string gas_limit = 10;
+  string memo = 11;
+}
+
+// SignRequest carries the exact ADR-020 SignDoc protobuf bytes to hash+sign.
+message SignRequest {
+  string key_ref = 1;
+  // Always "SIGN_MODE_DIRECT" in v1.
+  string sign_mode = 2;
+  bytes sign_doc_bytes = 3;
+  SigningSummary summary = 4;
+}
+
+// SignResponse returns the signature and the signing key.
+message SignResponse {
+  string key_ref = 1;
+  // 64 bytes R||S, low-S normalized, over SHA-256(sign_doc_bytes).
+  bytes signature = 2;
+  // 33 bytes, compressed.
+  bytes public_key_compressed = 3;
+}
+
+// SignerErrorCode mirrors the typed signer error codes 1:1
+// (contracts/signer-interface.md §Errors).
+enum SignerErrorCode {
+  SIGNER_ERROR_CODE_UNSPECIFIED = 0;
+  SIGNER_ERROR_CODE_KEY_NOT_FOUND = 1;
+  SIGNER_ERROR_CODE_SUMMARY_MISMATCH = 2;
+  SIGNER_ERROR_CODE_POLICY_REJECTED = 3;
+  SIGNER_ERROR_CODE_SIGNER_UNAVAILABLE = 4;
+  SIGNER_ERROR_CODE_INTERNAL = 5;
+}
+
+// SignerErrorDetail is attached to a non-OK gRPC status as a detail so the
+// client can map transport errors back to typed signer errors without
+// parsing status messages.
+message SignerErrorDetail {
+  SignerErrorCode code = 1;
+  // Human-readable detail; never contains sign-doc contents or key material.
+  string detail = 2;
+}

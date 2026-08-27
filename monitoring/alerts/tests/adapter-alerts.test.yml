@@ -1,0 +1,174 @@
+# promtool unit tests for the adapter alert pack.
+#   promtool test rules adapter-alerts.test.yml
+# The 1m evaluation interval mirrors monitoring/prometheus/prometheus.yml
+# (the SC-009 monitoring interval).
+
+rule_files:
+  - ../sovren-adapter-alerts.yml
+
+evaluation_interval: 1m
+
+tests:
+  # ScannerLagHigh: lag > 20 sustained for 5m pages.
+  - interval: 1m
+    input_series:
+      - series: 'sovren_scanner_height_lag{chain_id="sovr-1"}'
+        values: "25x10"
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: ScannerLagHigh
+        exp_alerts:
+          - exp_labels:
+              chain_id: sovr-1
+              severity: page
+            exp_annotations:
+              summary: "Deposit scanner is falling behind the chain tip"
+              description: "Scanner lag on sovr-1 is 25 blocks (> 20 for 5m). Check node health and adapter logs."
+      # Still inside the 5m `for` window: pending, not firing.
+      - eval_time: 4m
+        alertname: ScannerLagHigh
+        exp_alerts: []
+
+  # A healthy scanner (lag 3) never fires.
+  - interval: 1m
+    input_series:
+      - series: 'sovren_scanner_height_lag{chain_id="sovr-1"}'
+        values: "3x10"
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: ScannerLagHigh
+        exp_alerts: []
+
+  # WrongChainID + NodesDisagree both key off open chain-review conditions.
+  - interval: 1m
+    input_series:
+      - series: 'sovren_chain_review_conditions_open{chain_id="sovr-1",trigger="WRONG_CHAIN_ID"}'
+        values: "1x5"
+    alert_rule_test:
+      - eval_time: 2m
+        alertname: WrongChainID
+        exp_alerts:
+          - exp_labels:
+              chain_id: sovr-1
+              trigger: WRONG_CHAIN_ID
+              severity: page
+            exp_annotations:
+              summary: "Node reports a different chain_id than configured"
+              description: "The adapter opened a WRONG_CHAIN_ID chain-review condition on sovr-1. Crediting is gated until resolved."
+      - eval_time: 2m
+        alertname: NodesDisagree
+        exp_alerts:
+          - exp_labels:
+              chain_id: sovr-1
+              severity: page
+            exp_annotations:
+              summary: "Open chain-review condition (FR-044)"
+              description: "Primary and secondary nodes disagree (or another chain-review trigger fired) on sovr-1. Crediting is gated until resolved."
+
+  # ReconciliationDiscrepancy: any increment pages within the 1m interval.
+  # 15s samples (the contract scrape cadence) with the 0→1 transition at 90s,
+  # inside the rule's (1m, 2m] evaluation window.
+  - interval: 15s
+    input_series:
+      - series: 'sovren_reconciliation_discrepancies_total{chain_id="sovr-1"}'
+        values: "0x5 1x10"
+    alert_rule_test:
+      - eval_time: 1m
+        alertname: ReconciliationDiscrepancy
+        exp_alerts: []
+      - eval_time: 2m
+        alertname: ReconciliationDiscrepancy
+        exp_alerts:
+          - exp_labels:
+              chain_id: sovr-1
+              severity: page
+            exp_annotations:
+              summary: "Reconciliation discrepancy (zero-tolerance)"
+              description: "A ledger-vs-chain difference was detected on sovr-1. Follow docs/incident-response.md — pause crediting first, investigate second."
+
+  # WithdrawalFailureRateHigh: 1 failure/min against 10 broadcasts/min ≈ 10%.
+  - interval: 1m
+    input_series:
+      - series: 'sovren_withdrawals_failed_total{chain_id="sovr-1",stage="deliver"}'
+        values: "0+1x20"
+      - series: 'sovren_withdrawals_broadcast_total{chain_id="sovr-1"}'
+        values: "0+10x20"
+    alert_rule_test:
+      - eval_time: 16m
+        alertname: WithdrawalFailureRateHigh
+        exp_alerts:
+          - exp_labels:
+              chain_id: sovr-1
+              severity: page
+            exp_annotations:
+              summary: "Withdrawal failure rate above 5%"
+              description: "Failed/broadcast withdrawal ratio over 15m exceeds 5% on sovr-1."
+
+  # HotWalletBalanceLow: below the shipped 100 SOVR default.
+  - interval: 1m
+    input_series:
+      - series: 'sovren_hot_wallet_balance_usovr{chain_id="sovr-1",address="sovr1hotwallet"}'
+        values: "50000000x5"
+    alert_rule_test:
+      - eval_time: 2m
+        alertname: HotWalletBalanceLow
+        exp_alerts:
+          - exp_labels:
+              chain_id: sovr-1
+              address: sovr1hotwallet
+              severity: warn
+            exp_annotations:
+              summary: "Hot wallet balance below refill threshold"
+              description: "Hot wallet sovr1hotwallet on sovr-1 holds 5e+07 usovr. Schedule a cold-to-hot transfer."
+
+  # AbnormalFeeFundingVolume: > 50 SOVR of fee-funding in 1h warns after 5m.
+  - interval: 1m
+    input_series:
+      - series: 'sovren_fee_funding_usovr_total{chain_id="sovr-1"}'
+        values: "0+2000000x60"  # +2 SOVR/min -> ~120 SOVR over the hour, well over the 50 SOVR threshold
+    alert_rule_test:
+      - eval_time: 60m
+        alertname: AbnormalFeeFundingVolume
+        exp_alerts:
+          - exp_labels:
+              chain_id: sovr-1
+              severity: warn
+            exp_annotations:
+              summary: "Abnormal fee-wallet funding volume"
+              description: "Fee-wallet FEE_FUND spend on sovr-1 was 1.2e+08 usovr in the last hour. Check for a dust flood / derivation bug and confirm sweeps.fee_wallet_max_spend_usovr is set."
+
+  # DepositBacklog: sustained backlog above threshold for 10m warns.
+  - interval: 1m
+    input_series:
+      - series: 'sovren_deposit_backlog{chain_id="sovr-1"}'
+        values: "150x15"
+    alert_rule_test:
+      # Still inside the 10m `for` window: pending, not firing.
+      - eval_time: 5m
+        alertname: DepositBacklog
+        exp_alerts: []
+      - eval_time: 11m
+        alertname: DepositBacklog
+        exp_alerts:
+          - exp_labels:
+              chain_id: sovr-1
+              severity: warn
+            exp_annotations:
+              summary: "Creditable deposits are not being credited"
+              description: "150 deposits on sovr-1 are CREDITABLE but uncredited for 10m — crediting paused, gated, or stalled."
+
+  # SequenceMismatchRising: a single mismatch warns.
+  - interval: 1m
+    input_series:
+      - series: 'sovren_sequence_mismatch_total{chain_id="sovr-1"}'
+        values: "0 0 0 1 1 1"
+    alert_rule_test:
+      - eval_time: 4m
+        alertname: SequenceMismatchRising
+        exp_alerts:
+          - exp_labels:
+              chain_id: sovr-1
+              severity: warn
+            exp_annotations:
+              summary: "Sequence mismatches observed"
+              description: "Sequence reservations disagree with chain truth on sovr-1. Check sequences reconciliation before signing anything new."

@@ -1,0 +1,16 @@
+{
+  "chain_id": "test-sovr-1",
+  "endpoints": [
+    {
+      "kind": "rpc",
+      "url": "https://rpc.testnet.sovrchain.net",
+      "provider": "sovren"
+    },
+    {
+      "kind": "rest",
+      "url": "https://api.testnet.sovrchain.net",
+      "provider": "sovren"
+    }
+  ],
+  "explorer": ""
+}

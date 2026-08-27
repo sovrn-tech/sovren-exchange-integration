@@ -1,0 +1,35 @@
+# Sovren full node — systemd unit (cosmovisor-supervised).
+#
+# Install: /etc/systemd/system/sovrd.service
+# Layout + prerequisites: README.md in this directory.
+# DAEMON_ALLOW_DOWNLOAD_BINARIES stays false: upgrade binaries are staged by
+# the operator after checksum verification, never auto-downloaded.
+[Unit]
+Description=Sovren full node (sovrd via cosmovisor)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sovr
+Group=sovr
+Environment=DAEMON_NAME=sovrd
+Environment=DAEMON_HOME=/home/sovr/.sovr
+Environment=DAEMON_RESTART_AFTER_UPGRADE=true
+Environment=DAEMON_ALLOW_DOWNLOAD_BINARIES=false
+Environment=DAEMON_DATA_BACKUP_DIR=/home/sovr/.sovr/backup
+Environment=UNSAFE_SKIP_BACKUP=false
+ExecStart=/usr/local/bin/cosmovisor run start --home /home/sovr/.sovr
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+# The node reads/writes only its home; no signing keys live on this host.
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=false
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sovrd
+
+[Install]
+WantedBy=multi-user.target

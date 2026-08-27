@@ -1,0 +1,23 @@
+syntax = "proto3";
+package sovr.globalfee.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "sovr/globalfee/v1/params.proto";
+
+option go_package = "github.com/sovrn-tech/sovren-exchange-integration/go/gen/sovr/globalfee/v1;globalfeev1";
+
+// Query is the x/globalfee gRPC query service.
+service Query {
+  // Params returns the live network fee floor and bypass policy. This
+  // is what a wallet or explorer reads to display the current minimum
+  // gas price instead of guessing from a node's local app.toml.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/sovr/globalfee/v1/params";
+  }
+}
+
+message QueryParamsRequest {}
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

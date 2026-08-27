@@ -1,0 +1,17 @@
+# Go codegen for the kit's OWN protos only (sovr/* re-homed + sovren/* kit-native).
+# The cosmos/** dependency tree is NEVER generated into this module: doing so while
+# also importing cosmos-sdk would register duplicate proto file paths and panic at
+# init (plan R3). All cosmos imports are M-mapped to cosmos-sdk's existing packages.
+# TS codegen (mapped to cosmjs-types) is added by its owning task when first needed.
+version: v2
+plugins:
+  - local: ["go", "tool", "github.com/cosmos/gogoproto/protoc-gen-gocosmos"]
+    out: .
+    opt:
+      - plugins=grpc
+      - Mgoogle/protobuf/any.proto=github.com/cosmos/gogoproto/types/any
+      - Mcosmos/base/query/v1beta1/pagination.proto=github.com/cosmos/cosmos-sdk/types/query
+      - Mcosmos/tx/v1beta1/tx.proto=github.com/cosmos/cosmos-sdk/types/tx
+      - Mcosmos/tx/v1beta1/service.proto=github.com/cosmos/cosmos-sdk/types/tx
+      - Mcosmos/base/abci/v1beta1/abci.proto=github.com/cosmos/cosmos-sdk/types
+      - Mcosmos/base/v1beta1/coin.proto=github.com/cosmos/cosmos-sdk/types

@@ -1,0 +1,50 @@
+syntax = "proto3";
+package sovr.globalfee.v1;
+
+import "amino/amino.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/sovrn-tech/sovren-exchange-integration/go/gen/sovr/globalfee/v1;globalfeev1";
+
+// Params for x/globalfee.
+//
+// Network-wide minimum transaction fee floor, governance-mutable
+// through MsgUpdateParams. The floor is enforced in the ante handler
+// before fee deduction; it is the on-chain replacement for each
+// validator's local app.toml `minimum-gas-prices`. A node still
+// applies its own local floor too, so the effective floor on any node
+// is max(local, global) — global only ever raises the bar, never
+// lowers it below what an operator opts into.
+message Params {
+  option (amino.name) = "sovr/x/globalfee/Params";
+  option (gogoproto.equal) = true;
+
+  // minimum_gas_prices is the global floor, expressed as gas prices
+  // (price per unit gas) per denom. A tx's fee must satisfy
+  //   fee_amount >= ceil(gas_limit * min_gas_price)
+  // for at least the denoms present in the floor. An empty list means
+  // "no global floor" (fees fall back to the node-local setting),
+  // which is the SDK's permissive default — Validate rejects it for
+  // mainnet seeding, but it is representable so a testnet can run
+  // fee-free.
+  repeated cosmos.base.v1beta1.DecCoin minimum_gas_prices = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
+    (amino.dont_omitempty) = true
+  ];
+
+  // bypass_min_fee_msg_types is the allowlist of fully-qualified
+  // message type URLs that may be submitted below the global floor
+  // (typically IBC relay messages so relayers need not hold a gas
+  // balance). A tx qualifies for bypass only if EVERY message in it is
+  // a bypass type and its total gas stays under
+  // max_total_bypass_min_fee_msg_gas_usage.
+  repeated string bypass_min_fee_msg_types = 2;
+
+  // max_total_bypass_min_fee_msg_gas_usage caps the gas a bypassed tx
+  // may consume. Above this, the global floor applies even to an
+  // all-bypass-type tx — prevents a relayer-shaped tx from carrying
+  // unbounded fee-free compute.
+  uint64 max_total_bypass_min_fee_msg_gas_usage = 3;
+}

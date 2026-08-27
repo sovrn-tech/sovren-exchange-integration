@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "kit_version": "0.1.0",
+  "UNSAFE_TEST_ONLY": true,
+  "vectors": [
+    {
+      "id": "addr-001",
+      "mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      "derivation_path": "m/44'/118'/0'/0/0",
+      "private_key_hex": "c4a48e2fce1481cd3294b4490f6678090ea98d3d0e5cd984558ab0968741b104",
+      "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+      "account_address_bytes_hex": "28ff5c6d57d8cfd492b6fb42614536ed648e01fd",
+      "bech32_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "validation": {
+        "valid": true,
+        "normalized": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+      }
+    },
+    {
+      "id": "addr-002",
+      "mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      "derivation_path": "m/44'/118'/0'/0/1",
+      "private_key_hex": "c9ba8e1818baf4ceb063420dcedc7a482056a1580e4dbe797af3484aff7b8651",
+      "public_key_compressed_hex": "03a9a0776157f1dee1fe2d65628747059a8796de9a379f3015c4dcf483f64840a6",
+      "account_address_bytes_hex": "90edb6e1c8016bcef766d0ba657f9977ee9f72b6",
+      "bech32_address": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+      "validation": {
+        "valid": true,
+        "normalized": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3"
+      }
+    },
+    {
+      "id": "addr-003",
+      "mnemonic": "legal winner thank year wave sausage worth useful legal winner thank yellow",
+      "derivation_path": "m/44'/118'/0'/0/0",
+      "private_key_hex": "e0aff28c65d3d0dc3836e890414b99758a0a166291bdacd880cb1ca8a1a0e6bc",
+      "public_key_compressed_hex": "03510c69e626043eda293ccd3aecf49a568a9aab62173e77540fe385a454e61513",
+      "account_address_bytes_hex": "eb104bfbc4c4ca5f4bb5a02803c20721763aaab2",
+      "bech32_address": "sovr1avgyh77ycn997ja45q5q8ss8y9mr424j92gylj",
+      "validation": {
+        "valid": true,
+        "normalized": "sovr1avgyh77ycn997ja45q5q8ss8y9mr424j92gylj"
+      }
+    },
+    {
+      "id": "addr-val-001",
+      "input": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "validation": {
+        "valid": true,
+        "normalized": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+      }
+    },
+    {
+      "id": "addr-val-002",
+      "input": "SOVR19RL4CM2HMR8AFY4KLDPXZ3FKA4JGUQ0AES824X",
+      "validation": {
+        "valid": true,
+        "normalized": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+      }
+    },
+    {
+      "id": "addr-val-003",
+      "input": "sovr17xpfvakm2amg962yls6f84z3kell8c5l4ffhpw",
+      "validation": {
+        "valid": true,
+        "normalized": "sovr17xpfvakm2amg962yls6f84z3kell8c5l4ffhpw"
+      }
+    },
+    {
+      "id": "addr-val-004",
+      "input": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "prohibited": [
+        "sovr17xpfvakm2amg962yls6f84z3kell8c5l4ffhpw"
+      ],
+      "validation": {
+        "valid": true,
+        "normalized": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+      }
+    },
+    {
+      "id": "addr-inv-001",
+      "input": "",
+      "validation": {
+        "valid": false,
+        "error_code": "ADDRESS_EMPTY"
+      }
+    },
+    {
+      "id": "addr-inv-002",
+      "input": " sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "validation": {
+        "valid": false,
+        "error_code": "ADDRESS_WHITESPACE"
+      }
+    },
+    {
+      "id": "addr-inv-003",
+      "input": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x\n",
+      "validation": {
+        "valid": false,
+        "error_code": "ADDRESS_WHITESPACE"
+      }
+    },
+    {
+      "id": "addr-inv-004",
+      "input": "sovr19rl4c m2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "validation": {
+        "valid": false,
+        "error_code": "ADDRESS_WHITESPACE"
+      }
+    },
+    {
+      "id": "addr-inv-005",
+      "input": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824q",
+      "validation": {
+        "valid": false,
+        "error_code": "ADDRESS_INVALID_BECH32"
+      }
+    },
+    {
+      "id": "addr-inv-006",
+      "input": "Sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "validation": {
+        "valid": false,
+        "error_code": "ADDRESS_INVALID_BECH32"
+      }
+    },
+    {
+      "id": "addr-inv-007",
+      "input": "not-an-address",
+      "validation": {
+        "valid": false,
+        "error_code": "ADDRESS_INVALID_BECH32"
+      }
+    },
+    {
+      "id": "addr-inv-008",
+      "input": "cosmos19rl4cm2hmr8afy4kldpxz3fka4jguq0auqdal4",
+      "validation": {
+        "valid": false,
+        "error_code": "ADDRESS_WRONG_PREFIX"
+      }
+    },
+    {
+      "id": "addr-inv-009",
+      "input": "0x28ff5c6d57d8cfd492b6fb42614536ed648e01fd",
+      "validation": {
+        "valid": false,
+        "error_code": "ADDRESS_WRONG_PREFIX"
+      }
+    },
+    {
+      "id": "addr-inv-010",
+      "input": "28ff5c6d57d8cfd492b6fb42614536ed648e01fd",
+      "validation": {
+        "valid": false,
+        "error_code": "ADDRESS_WRONG_PREFIX"
+      }
+    },
+    {
+      "id": "addr-inv-011",
+      "input": "sovrvaloper19rl4cm2hmr8afy4kldpxz3fka4jguq0awdksp8",
+      "validation": {
+        "valid": false,
+        "error_code": "ADDRESS_NOT_ACCOUNT_TYPE"
+      }
+    },
+    {
+      "id": "addr-inv-012",
+      "input": "sovrvalcons19rl4cm2hmr8afy4kldpxz3fka4jguq0a679vdx",
+      "validation": {
+        "valid": false,
+        "error_code": "ADDRESS_NOT_ACCOUNT_TYPE"
+      }
+    },
+    {
+      "id": "addr-inv-013",
+      "input": "sovr19rsr75l205ejzpyk6s2u9etgdm6quyc7mf0y07mv2ztnwqt2d8ks5hg6kf",
+      "validation": {
+        "valid": false,
+        "error_code": "ADDRESS_WRONG_LENGTH"
+      }
+    },
+    {
+      "id": "addr-inv-014",
+      "input": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguqgs3e3pq",
+      "validation": {
+        "valid": false,
+        "error_code": "ADDRESS_WRONG_LENGTH"
+      }
+    },
+    {
+      "id": "addr-inv-015",
+      "input": "sovr17xpfvakm2amg962yls6f84z3kell8c5l4ffhpw",
+      "prohibited": [
+        "sovr17xpfvakm2amg962yls6f84z3kell8c5l4ffhpw"
+      ],
+      "validation": {
+        "valid": false,
+        "error_code": "ADDRESS_PROHIBITED"
+      }
+    }
+  ]
+}

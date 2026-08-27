@@ -1,0 +1,114 @@
+# Sovren exchange full node — Docker Compose profile.
+#
+# Derived from the upstream minimal-fullnode profile, re-tuned for exchange
+# adapter use: REST + gRPC on, kv tx index on (FR-045: required for tx-hash
+# lookup; the block scanner alone works with TX_INDEX=null), mempool on
+# (broadcast path), historical /block_results retained for deposit scanning.
+#
+# Query surfaces (26657 RPC / 1317 REST / 9090 gRPC) bind to localhost only:
+# the adapter runs on the same host or behind your own private network. Only
+# P2P 26656 must be reachable from the internet.
+#
+# Bring-up:
+#   1. Stage a release bundle (genesis.json, checksums.txt, seeds.txt) under
+#      ./release/ — genesis sha256 MUST match network/<net>/genesis.sha256.
+#   2. cp env.example .env && edit .env
+#   3. docker compose up -d
+#   4. curl -s localhost:26657/status | jq .result.sync_info
+
+services:
+  sovr:
+    image: ${SOVR_NODE_IMAGE:?set SOVR_NODE_IMAGE — image + digest published per release, see README}
+    container_name: sovren-exchange-fullnode
+    restart: unless-stopped
+    environment:
+      DEPLOYMENT_ENVIRONMENT: ${DEPLOYMENT_ENVIRONMENT:?set DEPLOYMENT_ENVIRONMENT (mainnet|public-testnet)}
+      CHAIN_ID: ${CHAIN_ID:?set CHAIN_ID (sovr-1 on mainnet)}
+      MONIKER: ${MONIKER:-sovren-exchange-fullnode}
+      MINIMUM_GAS_PRICES: ${MINIMUM_GAS_PRICES:-0.001usovr}
+      ENABLE_INIT_HELPERS: "false"
+      # This node never holds signing keys; withdrawals sign externally
+      # (kit signer boundary, FR-021).
+      SIGNER_MODE: disabled
+      KEYRING_BACKEND: ${KEYRING_BACKEND:-test}
+      GENESIS_FILE_PATH: /home/sovr/.sovr/config/genesis.json
+      RELEASE_BUNDLE_DIR: /etc/sovr/release
+      RELEASE_BUNDLE_CHECKSUMS: /etc/sovr/release/checksums.txt
+      RELEASE_BUNDLE_LAUNCH_PLAN: /etc/sovr/release/launch.env
+      CANONICAL_SEEDS_FILE: /etc/sovr/release/seeds.txt
+      # Values for both come from network/<net>/peers.txt (SEEDS= /
+      # PERSISTENT_PEERS= lines).
+      SEEDS: ${SEEDS:-}
+      PERSISTENT_PEERS: ${PERSISTENT_PEERS:-}
+      EXTERNAL_ADDRESS: ${EXTERNAL_ADDRESS:-}
+
+      # Retention: the scanner replays /block_results inside its confirmation
+      # and rescan windows; keep app state + block history on this profile.
+      PRUNING: ${PRUNING:-default}
+      MIN_RETAIN_BLOCKS: ${MIN_RETAIN_BLOCKS:-0}
+      DISCARD_ABCI_RESPONSES: "false"
+
+      # kv tx index — FR-045: Tx-by-hash lookup (withdrawal broadcast-state
+      # resolution) requires it.
+      TX_INDEX: kv
+
+      # Broadcast path on: the adapter submits withdrawals through this node.
+      MEMPOOL_TYPE: ${MEMPOOL_TYPE:-flood}
+      MEMPOOL_SIZE: ${MEMPOOL_SIZE:-1000}
+      MEMPOOL_CACHE_SIZE: ${MEMPOOL_CACHE_SIZE:-10000}
+
+      RPC_MAX_OPEN_CONNECTIONS: ${RPC_MAX_OPEN_CONNECTIONS:-200}
+
+      # Query-serving cache sizing (larger than the minimal profile).
+      IAVL_CACHE_SIZE: ${IAVL_CACHE_SIZE:-50000}
+      INTER_BLOCK_CACHE: ${INTER_BLOCK_CACHE:-true}
+
+      # Snapshot production off — this node is a state-sync consumer only.
+      SNAPSHOT_INTERVAL: "0"
+      SNAPSHOT_KEEP_RECENT: "0"
+
+      WASM_MEMORY_CACHE_SIZE: ${WASM_MEMORY_CACHE_SIZE:-100}
+      WASM_QUERY_GAS_LIMIT: ${WASM_QUERY_GAS_LIMIT:-50000}
+
+      # GC ceiling below the container memory limit (wasmvm allocates
+      # outside the Go heap).
+      GOMEMLIMIT: ${GOMEMLIMIT:-3400MiB}
+      GOGC: ${GOGC:-75}
+
+      # Service surfaces the adapter consumes (R4/R8: gRPC or REST must be
+      # enabled for the tunneled tx-service routes — Simulate/GetTx).
+      API_ENABLE: "true"
+      GRPC_ENABLE: "true"
+      GRPC_WEB_ENABLE: ${GRPC_WEB_ENABLE:-false}
+      ENABLE_SWAGGER: "false"
+      PROMETHEUS_ENABLE: ${PROMETHEUS_ENABLE:-true}
+    ports:
+      # P2P must be reachable from peers.
+      - "${P2P_PORT:-26656}:26656"
+      # Query surfaces: localhost-bound; front with your own proxy/VPN if the
+      # adapter runs on another host.
+      - "${RPC_BIND:-127.0.0.1}:${RPC_PORT:-26657}:26657"
+      - "${API_BIND:-127.0.0.1}:${API_PORT:-1317}:1317"
+      - "${GRPC_BIND:-127.0.0.1}:${GRPC_PORT:-9090}:9090"
+      # Prometheus (uncomment to scrape from another host):
+      # - "${METRICS_BIND:-127.0.0.1}:${METRICS_PORT:-26660}:26660"
+    volumes:
+      - ${HOST_SOVR_HOME:?set HOST_SOVR_HOME (e.g. ./data/sovr)}:/home/sovr/.sovr
+      - ${HOST_RELEASE_BUNDLE_DIR:?set HOST_RELEASE_BUNDLE_DIR (e.g. ./release)}:/etc/sovr/release:ro
+    command: ["start"]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:26657/status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: ${MEMORY_LIMIT:-4g}
+          cpus: "${CPU_LIMIT:-2}"
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"

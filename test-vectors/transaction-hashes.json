@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "kit_version": "0.1.0",
+  "UNSAFE_TEST_ONLY": true,
+  "vectors": [
+    {
+      "id": "tx-001",
+      "chain_id": "sovr-1",
+      "account_number": "42",
+      "sequence": "7",
+      "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "to": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+      "amount_base_units": "1000000",
+      "denom": "usovr",
+      "fee_base_units": "32500",
+      "gas_limit": "130000",
+      "memo": "vector",
+      "signer_mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      "signer_hd_path": "m/44'/118'/0'/0/0",
+      "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+      "tx_hash": "F840FC7D55A59E3236E772F405A9F56386BF84A3278B015E856925A9797A7777"
+    },
+    {
+      "id": "tx-002",
+      "chain_id": "sovr-1",
+      "account_number": "42",
+      "sequence": "8",
+      "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "to": "sovr1avgyh77ycn997ja45q5q8ss8y9mr424j92gylj",
+      "amount_base_units": "250000000",
+      "denom": "usovr",
+      "fee_base_units": "26000",
+      "gas_limit": "104000",
+      "memo": "",
+      "signer_mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      "signer_hd_path": "m/44'/118'/0'/0/0",
+      "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+      "tx_hash": "A4CD6B92CA162F969E873DBA666DAD5629661035FB74C65A8B398688107EA95F"
+    },
+    {
+      "id": "tx-003",
+      "chain_id": "sovr-1",
+      "account_number": "1",
+      "sequence": "0",
+      "from": "sovr1avgyh77ycn997ja45q5q8ss8y9mr424j92gylj",
+      "to": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "amount_base_units": "1",
+      "denom": "usovr",
+      "fee_base_units": "0",
+      "gas_limit": "200000",
+      "memo": "min",
+      "signer_mnemonic": "legal winner thank year wave sausage worth useful legal winner thank yellow",
+      "signer_hd_path": "m/44'/118'/0'/0/0",
+      "public_key_compressed_hex": "03510c69e626043eda293ccd3aecf49a568a9aab62173e77540fe385a454e61513",
+      "tx_hash": "BF305E46D6327339A04898A8943C37AB4F0635DABFDA01FACB752D2E8C6A2833"
+    },
+    {
+      "id": "tx-004",
+      "chain_id": "sovr-1",
+      "account_number": "7",
+      "sequence": "77",
+      "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "to": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+      "amount_base_units": "1000000000000000",
+      "denom": "usovr",
+      "fee_base_units": "500000",
+      "gas_limit": "200000",
+      "memo": "max",
+      "signer_mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      "signer_hd_path": "m/44'/118'/0'/0/0",
+      "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+      "tx_hash": "359BAF2E1F20A714F6F7F026E6703706DD55DD47DFDD47E51FE9E39EC10E79EA"
+    },
+    {
+      "id": "tx-005",
+      "chain_id": "test-sovr-1",
+      "account_number": "42",
+      "sequence": "7",
+      "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "to": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+      "amount_base_units": "1000000",
+      "denom": "usovr",
+      "fee_base_units": "32500",
+      "gas_limit": "130000",
+      "memo": "vector",
+      "signer_mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      "signer_hd_path": "m/44'/118'/0'/0/0",
+      "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+      "tx_hash": "84D4C42E50B5C2098139B02C914DF52112FED369AE87F2F8297DE478FBE2548B"
+    },
+    {
+      "id": "tx-006",
+      "chain_id": "test-sovr-1",
+      "account_number": "42",
+      "sequence": "8",
+      "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "to": "sovr1avgyh77ycn997ja45q5q8ss8y9mr424j92gylj",
+      "amount_base_units": "250000000",
+      "denom": "usovr",
+      "fee_base_units": "26000",
+      "gas_limit": "104000",
+      "memo": "",
+      "signer_mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      "signer_hd_path": "m/44'/118'/0'/0/0",
+      "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+      "tx_hash": "C72FE6DC0A16626B1CC6582F7FE1D2E143E710DFE2DF97AE079D670B3EE5C806"
+    },
+    {
+      "id": "tx-msend-001",
+      "kind": "multisend_parse_only",
+      "chain_id": "sovr-1",
+      "account_number": "42",
+      "sequence": "9",
+      "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+      "denom": "usovr",
+      "fee_base_units": "40000",
+      "gas_limit": "160000",
+      "memo": "multisend parse fixture",
+      "signer_mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      "signer_hd_path": "m/44'/118'/0'/0/0",
+      "multisend": {
+        "inputs": [
+          {
+            "address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+            "coins": [
+              {
+                "denom": "testtoken",
+                "amount": "5"
+              },
+              {
+                "denom": "usovr",
+                "amount": "3000000"
+              }
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "address": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+            "coins": [
+              {
+                "denom": "usovr",
+                "amount": "1000000"
+              }
+            ]
+          },
+          {
+            "address": "sovr1avgyh77ycn997ja45q5q8ss8y9mr424j92gylj",
+            "coins": [
+              {
+                "denom": "testtoken",
+                "amount": "5"
+              },
+              {
+                "denom": "usovr",
+                "amount": "2000000"
+              }
+            ]
+          }
+        ]
+      },
+      "body_bytes_hex": "0a89020a212f636f736d6f732e62616e6b2e763162657461312e4d73674d756c746953656e6412e3010a4f0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478120e0a0974657374746f6b656e12013512100a0575736f7672120733303030303030123f0a2b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b65677678753312100a0575736f7672120731303030303030124f0a2b736f7672316176677968373779636e3939376a6134357135713873733879396d723432346a393267796c6a120e0a0974657374746f6b656e12013512100a0575736f767212073230303030303012176d756c746973656e642070617273652066697874757265",
+      "auth_info_bytes_hex": "0a0812040a020801180912140a0e0a0575736f7672120534303030301080e209",
+      "sign_doc_bytes_hex": "0aa5020a89020a212f636f736d6f732e62616e6b2e763162657461312e4d73674d756c746953656e6412e3010a4f0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478120e0a0974657374746f6b656e12013512100a0575736f7672120733303030303030123f0a2b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b65677678753312100a0575736f7672120731303030303030124f0a2b736f7672316176677968373779636e3939376a6134357135713873733879396d723432346a393267796c6a120e0a0974657374746f6b656e12013512100a0575736f767212073230303030303012176d756c746973656e64207061727365206669787475726512200a0812040a020801180912140a0e0a0575736f7672120534303030301080e2091a06736f76722d31202a",
+      "signature_hex": "9e5d3e2e18892afca3cbff163aeb6ade312c9928f979f2d2f7fa5fd89a8b886b5c17d17bca962710b78d32d5842920f206f272f7cbfc32cc64a582a8fc6b6bd7",
+      "tx_raw_bytes_hex": "0aa5020a89020a212f636f736d6f732e62616e6b2e763162657461312e4d73674d756c746953656e6412e3010a4f0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478120e0a0974657374746f6b656e12013512100a0575736f7672120733303030303030123f0a2b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b65677678753312100a0575736f7672120731303030303030124f0a2b736f7672316176677968373779636e3939376a6134357135713873733879396d723432346a393267796c6a120e0a0974657374746f6b656e12013512100a0575736f767212073230303030303012176d756c746973656e64207061727365206669787475726512200a0812040a020801180912140a0e0a0575736f7672120534303030301080e2091a409e5d3e2e18892afca3cbff163aeb6ade312c9928f979f2d2f7fa5fd89a8b886b5c17d17bca962710b78d32d5842920f206f272f7cbfc32cc64a582a8fc6b6bd7",
+      "tx_hash": "71DFE22DC9E49B2393F08ED577E3F55A860EB11397F0B44211B3B07EA1F447C6"
+    }
+  ]
+}

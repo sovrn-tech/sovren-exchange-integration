@@ -1,0 +1,92 @@
+{
+  "title": "Sovren Adapter — Wallet Economics",
+  "uid": "sovren-wallet-economics",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "timezone": "utc",
+  "time": { "from": "now-24h", "to": "now" },
+  "refresh": "1m",
+  "tags": ["sovren", "exchange-kit"],
+  "templating": {
+    "list": [
+      {
+        "name": "chain_id",
+        "type": "query",
+        "datasource": { "type": "prometheus" },
+        "query": "label_values(sovren_hot_wallet_balance_usovr, chain_id)",
+        "refresh": 2
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Hot / fee wallet balances (usovr)",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 0 },
+      "targets": [
+        { "expr": "sovren_hot_wallet_balance_usovr{chain_id=\"$chain_id\"}", "legendFormat": "{{address}}" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "thresholdsStyle": { "mode": "line" } },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 100000000 }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Lowest hot-wallet balance (alert < 100 SOVR)",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 9 },
+      "targets": [{ "expr": "min(sovren_hot_wallet_balance_usovr{chain_id=\"$chain_id\"})" }]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Deposits credited vs swept-value proxy (per 1h)",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 9 },
+      "targets": [
+        { "expr": "increase(sovren_deposits_credited_total{chain_id=\"$chain_id\"}[1h])", "legendFormat": "credited count" }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Sweeps deferred (fee-insufficient) per 1h",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 9 },
+      "targets": [
+        { "expr": "increase(sovren_sweeps_deferred_total{chain_id=\"$chain_id\"}[1h])", "legendFormat": "deferred" }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Withdrawal failure ratio (15m, alert > 5%)",
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 15 },
+      "targets": [
+        {
+          "expr": "sum by (chain_id) (increase(sovren_withdrawals_failed_total{chain_id=\"$chain_id\"}[15m])) / clamp_min(sum by (chain_id) (increase(sovren_withdrawals_broadcast_total{chain_id=\"$chain_id\"}[15m])), 1)",
+          "legendFormat": "failure ratio"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Sequence mismatches (15m)",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 15 },
+      "targets": [
+        { "expr": "increase(sovren_sequence_mismatch_total{chain_id=\"$chain_id\"}[15m])", "legendFormat": "mismatches" }
+      ]
+    }
+  ]
+}

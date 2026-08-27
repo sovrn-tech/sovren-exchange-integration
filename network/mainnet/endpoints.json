@@ -1,0 +1,16 @@
+{
+  "chain_id": "sovr-1",
+  "endpoints": [
+    {
+      "kind": "rpc",
+      "url": "https://rpc.sovrchain.net",
+      "provider": "sovren"
+    },
+    {
+      "kind": "rest",
+      "url": "https://api.sovrchain.net",
+      "provider": "sovren"
+    }
+  ],
+  "explorer": "https://sovrscan.com"
+}

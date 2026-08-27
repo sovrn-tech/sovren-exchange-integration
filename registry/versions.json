@@ -1,0 +1,40 @@
+{
+  "$schema": "../versions.schema.json",
+  "chain_name": "sovr",
+  "versions": [
+    {
+      "name": "v0.23.0-combined",
+      "tag": "v0.23.0",
+      "recommended_version": "v0.23.0",
+      "compatible_versions": ["v0.23.0"],
+      "previous_version_name": "v0.19.0-combined",
+      "sdk": { "type": "cosmos", "version": "v0.53.8" },
+      "consensus": { "type": "cometbft", "version": "v0.38.23" },
+      "ibc": { "type": "go", "version": "v10.5.0" },
+      "cosmwasm": { "version": "v0.60.7", "enabled": true }
+    },
+    {
+      "name": "v0.19.0-combined",
+      "tag": "v0.19.0",
+      "recommended_version": "v0.19.0",
+      "compatible_versions": ["v0.19.0"],
+      "previous_version_name": "v0.16.2",
+      "next_version_name": "v0.23.0-combined",
+      "sdk": { "type": "cosmos", "version": "v0.53.6" },
+      "consensus": { "type": "cometbft", "version": "v0.38.21" },
+      "ibc": { "type": "go", "version": "v10.4.0" },
+      "cosmwasm": { "version": "v0.60.1", "enabled": true }
+    },
+    {
+      "name": "v0.16.2",
+      "tag": "v0.16.2",
+      "recommended_version": "v0.16.2",
+      "compatible_versions": ["v0.16.2"],
+      "next_version_name": "v0.19.0-combined",
+      "sdk": { "type": "cosmos", "version": "v0.53.6" },
+      "consensus": { "type": "cometbft", "version": "v0.38.21" },
+      "ibc": { "type": "go", "version": "v10.4.0" },
+      "cosmwasm": { "version": "v0.60.1", "enabled": true }
+    }
+  ]
+}

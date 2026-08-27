@@ -1,0 +1,48 @@
+# Sovren exchange full node — Services.
+#
+# - headless: StatefulSet identity
+# - p2p: the ONLY surface that may be internet-reachable (LoadBalancer/NodePort)
+# - query: RPC/REST/gRPC for the adapter — ClusterIP, never exposed publicly
+apiVersion: v1
+kind: Service
+metadata:
+  name: sovren-node-headless
+  labels:
+    app.kubernetes.io/name: sovren-node
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: sovren-node
+  ports:
+    - { name: p2p, port: 26656, targetPort: p2p }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sovren-node-p2p
+  labels:
+    app.kubernetes.io/name: sovren-node
+spec:
+  # Switch to LoadBalancer (or NodePort) to accept inbound P2P; outbound-only
+  # sync works without it.
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: sovren-node
+  ports:
+    - { name: p2p, port: 26656, targetPort: p2p }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sovren-node-query
+  labels:
+    app.kubernetes.io/name: sovren-node
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: sovren-node
+  ports:
+    - { name: rpc, port: 26657, targetPort: rpc }
+    - { name: rest, port: 1317, targetPort: rest }
+    - { name: grpc, port: 9090, targetPort: grpc }
+    - { name: prometheus, port: 26660, targetPort: prometheus }

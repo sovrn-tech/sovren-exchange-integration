@@ -1,0 +1,142 @@
+{
+  "$schema": "../../chain.schema.json",
+  "chain_name": "sovrtestnet",
+  "chain_type": "cosmos",
+  "chain_id": "test-sovr-1",
+  "pretty_name": "Sovren Testnet",
+  "status": "live",
+  "network_type": "testnet",
+  "description": "Sovren public testnet. DNS-named P2P peers (seeds + sentries) published 2026-07-24; no raw-IP peer strings are ever listed.",
+  "bech32_prefix": "sovr",
+  "daemon_name": "sovrd",
+  "node_home": "$HOME/.sovr",
+  "key_algos": [
+    "secp256k1"
+  ],
+  "slip44": 118,
+  "fees": {
+    "fee_tokens": [
+      {
+        "denom": "usovr",
+        "fixed_min_gas_price": 0.001,
+        "low_gas_price": 0.025,
+        "average_gas_price": 0.025,
+        "high_gas_price": 0.04
+      }
+    ]
+  },
+  "staking": {
+    "staking_tokens": [
+      {
+        "denom": "usovr"
+      }
+    ]
+  },
+  "codebase": {
+    "git_repo": "https://github.com/sovrn-tech/sovr-networks",
+    "recommended_version": "v0.23.1-rc1",
+    "compatible_versions": [
+      "v0.23.0",
+      "v0.23.1-rc1"
+    ],
+    "sdk": {
+      "type": "cosmos",
+      "version": "v0.53.8"
+    },
+    "consensus": {
+      "type": "cometbft",
+      "version": "v0.38.23"
+    },
+    "ibc": {
+      "type": "go",
+      "version": "v10.5.0"
+    },
+    "cosmwasm": {
+      "version": "v0.60.7",
+      "enabled": true
+    },
+    "genesis": {
+      "name": "test-sovr-1",
+      "genesis_url": "https://github.com/sovrn-tech/sovr-networks/raw/main/testnet/genesis.json?checksum=sha256:5eb3be46b3020ffc9105be09fdaed874cad0f6e9110aaa58053d72711c8aef40"
+    }
+  },
+  "peers": {
+    "seeds": [
+      {
+        "id": "d5e5770e1198b6ab66dcf7bfadb90610e82bf6cd",
+        "address": "seed1.testnet.sovrchain.net:32000",
+        "provider": "sovren"
+      },
+      {
+        "id": "c24ded42a0026b4d912d8576b3d84d3c690b2d02",
+        "address": "seed2.testnet.sovrchain.net:32001",
+        "provider": "sovren"
+      }
+    ],
+    "persistent_peers": [
+      {
+        "id": "2dae62e74b0b175e7d905eeaca530464de8d8183",
+        "address": "sentry1a.testnet.sovrchain.net:32200",
+        "provider": "sovren"
+      },
+      {
+        "id": "5a5dca65a8fa75d66a65eca470d2c88d3c1c2703",
+        "address": "sentry1b.testnet.sovrchain.net:32201",
+        "provider": "sovren"
+      },
+      {
+        "id": "70ac5c238c5f83d6ef7480f64ec5c22d29364797",
+        "address": "sentry2a.testnet.sovrchain.net:32220",
+        "provider": "sovren"
+      },
+      {
+        "id": "c5385795047ac6a11d3328362033721ed3213657",
+        "address": "sentry2b.testnet.sovrchain.net:32221",
+        "provider": "sovren"
+      },
+      {
+        "id": "8cfacb1a936e3b848923a6fe631690336dc7717e",
+        "address": "sentry3a.testnet.sovrchain.net:32240",
+        "provider": "sovren"
+      },
+      {
+        "id": "dbf89f924f158c77222343d322e57eb1042b0a4c",
+        "address": "sentry3b.testnet.sovrchain.net:32241",
+        "provider": "sovren"
+      }
+    ]
+  },
+  "apis": {
+    "rpc": [
+      {
+        "address": "https://rpc.testnet.sovrchain.net",
+        "provider": "sovren"
+      }
+    ],
+    "rest": [
+      {
+        "address": "https://api.testnet.sovrchain.net",
+        "provider": "sovren"
+      }
+    ],
+    "grpc": [
+      {
+        "address": "grpc.testnet.sovrchain.net:443",
+        "provider": "sovren"
+      }
+    ]
+  },
+  "logo_URIs": {
+    "png": "https://raw.githubusercontent.com/cosmos/chain-registry/master/sovr/images/sovr.png",
+    "svg": "https://raw.githubusercontent.com/cosmos/chain-registry/master/sovr/images/sovr.svg"
+  },
+  "images": [
+    {
+      "png": "https://raw.githubusercontent.com/cosmos/chain-registry/master/sovr/images/sovr.png",
+      "svg": "https://raw.githubusercontent.com/cosmos/chain-registry/master/sovr/images/sovr.svg",
+      "image_sync": {
+        "chain_name": "sovr"
+      }
+    }
+  ]
+}

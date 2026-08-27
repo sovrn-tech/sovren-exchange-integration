@@ -1,0 +1,49 @@
+# Local-dev network manifest for adapter.local.yaml (schema_version 1).
+# This describes a single-node local chain (chain-id sovr-local-dev) — the
+# docker-compose dev fixture. Regenerate genesis.sha256 and the seed node id
+# for your own local chain; the values below satisfy schema validation only.
+schema_version: 1
+network_name: Sovren Local Dev
+network_type: testnet
+chain_id: sovr-local-dev
+daemon_name: sovrd
+node_home: $HOME/.sovr
+account_prefix: sovr
+validator_operator_prefix: sovrvaloper
+validator_consensus_prefix: sovrvalcons
+base_denom: usovr
+display_denom: SOVR
+display_exponent: 6
+symbol: SOVR
+account_key_algorithm: secp256k1
+consensus_key_algorithm: ed25519
+slip44_coin_type: 118
+versions:
+  sdk: v0.53.8
+  cometbft: v0.38.23
+  ibc_go: v10.5.0
+  cosmwasm_wasmd: v0.60.7
+  go: "1.25.7"
+  app: v0.23.0
+fees:
+  minimum_gas_price: "0.001usovr"
+  recommended_gas_price: "0.025usovr"
+  recommended_gas_adjustment: "1.3"
+ports: { p2p: 26656, rpc: 26657, grpc: 9090, rest: 1317, metrics: 26660 }
+genesis:
+  # Local-dev genesis is regenerated per environment; replace with
+  # sha256sum of your local genesis.json before relying on verification.
+  sha256: 0000000000000000000000000000000000000000000000000000000000000000
+  file: genesis.json
+endpoints:
+  - { kind: rpc, url: "http://localhost:26657", provider: local }
+  - { kind: rest, url: "http://localhost:1317", provider: local }
+peers:
+  seeds:
+    # Placeholder node id — a single-node local chain needs no peers.
+    - "0000000000000000000000000000000000000000@localhost:26656"
+links:
+  explorer: "http://localhost:26657/status"
+  registry_dir: sovrlocaldev
+divergences:
+  - "single-node local development chain; no public endpoints, placeholder genesis hash and seed id"

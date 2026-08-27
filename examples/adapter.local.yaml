@@ -1,0 +1,51 @@
+# sovren-adapter configuration for a local-dev chain (sovr-local-dev).
+# Contract: specs/008-exchange-integration-kit/contracts/adapter-config-and-ops.md.
+# Run:  sovren-adapter --config examples/adapter.local.yaml scanner
+# Every economic value is a string integer/decimal; unknown keys are errors.
+schema_version: 1
+network_manifest: ./network.local.yaml
+nodes:
+  primary: { rpc: "http://localhost:26657", rest: "http://localhost:1317", grpc: "localhost:9090" }
+storage:
+  backend: sqlite
+  # Secrets (Postgres passwords) reach the DSN via ${ENV_VAR} expansion only.
+  dsn: "file:sovren-adapter-local.db"
+scanner:
+  # Local single-validator chain: 1 confirmation. Recommended launch default
+  # is 2 (range 1..12; operational buffer on single-block finality —
+  # docs/deposit-processing.md).
+  confirmations: 1
+  start_height: null
+  # The kit client is unary-only; a short poll interval is the
+  # accelerator-equivalent of websocket_accelerator (documented deviation).
+  websocket_accelerator: false
+  poll_interval: 1s
+  # Deposits below this park as BELOW_MINIMUM; empty disables parking.
+  minimum_deposit_usovr: "1000"
+  # Optional startup seed of the watched-address set (database stays the
+  # runtime source of truth):
+  # watch:
+  #   - { address: sovr1..., kind: CUSTOMER_DEPOSIT, memo_required: false }
+  #   - { address: sovr1..., kind: HOT_WALLET }
+withdrawals:
+  minimum_withdrawal_usovr: "1000000"
+  max_fee_usovr: "500000"
+  gas_adjustment: "1.5"
+  broadcast_timeout: 15s
+  prohibited_destinations: []   # default module accounts always blocked; add exchange-specific entries here
+  simulate_unavailable: queue
+sweeps:
+  strategy: FEE_RESERVE
+  minimum_sweep_amount_usovr: "10000000"
+  maximum_fee_percentage_for_sweep: "1.0"
+  fee_reserve_usovr: "50000"
+signer:
+  # unsafe-local is refused when the manifest network_type is mainnet.
+  kind: unsafe-local
+reconciler:
+  wallet_interval: 1h
+  full_address_interval: 24h
+admin:
+  listen: "127.0.0.1:9465"
+metrics:
+  listen: ":9464"

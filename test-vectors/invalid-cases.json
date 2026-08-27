@@ -1,0 +1,261 @@
+{
+  "schema_version": 1,
+  "kit_version": "0.1.0",
+  "UNSAFE_TEST_ONLY": true,
+  "vectors": [
+    {
+      "id": "neg-001",
+      "category": "WRONG_BECH32_PREFIX",
+      "vector": {
+        "address": "cosmos19rl4cm2hmr8afy4kldpxz3fka4jguq0auqdal4"
+      },
+      "expected": {
+        "error_code": "ADDRESS_WRONG_PREFIX",
+        "outcome": "address validation rejects",
+        "stage": "library"
+      }
+    },
+    {
+      "id": "neg-002",
+      "category": "INVALID_CHECKSUM",
+      "vector": {
+        "address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824q"
+      },
+      "expected": {
+        "error_code": "ADDRESS_INVALID_BECH32",
+        "outcome": "address validation rejects",
+        "stage": "library"
+      }
+    },
+    {
+      "id": "neg-003",
+      "category": "VALIDATOR_OPERATOR_ADDRESS",
+      "vector": {
+        "address": "sovrvaloper19rl4cm2hmr8afy4kldpxz3fka4jguq0awdksp8"
+      },
+      "expected": {
+        "error_code": "ADDRESS_NOT_ACCOUNT_TYPE",
+        "outcome": "address validation rejects",
+        "stage": "library"
+      }
+    },
+    {
+      "id": "neg-004",
+      "category": "ZERO_AMOUNT",
+      "vector": {
+        "amount_display": "0"
+      },
+      "expected": {
+        "base_units": "0",
+        "outcome": "conversion yields base 0; single-MsgSend build rejects zero amount",
+        "stage": "library"
+      }
+    },
+    {
+      "id": "neg-005",
+      "category": "NEGATIVE_AMOUNT",
+      "vector": {
+        "amount_display": "-25.5"
+      },
+      "expected": {
+        "error_code": "AMOUNT_NEGATIVE",
+        "outcome": "amount conversion rejects",
+        "stage": "library"
+      }
+    },
+    {
+      "id": "neg-006",
+      "category": "EXCESS_DECIMALS",
+      "vector": {
+        "amount_display": "1.1234567"
+      },
+      "expected": {
+        "error_code": "AMOUNT_TOO_MANY_DECIMALS",
+        "outcome": "amount conversion rejects",
+        "stage": "library"
+      }
+    },
+    {
+      "id": "neg-007",
+      "category": "WRONG_DENOM",
+      "vector": {
+        "sign_doc_bytes_hex": "0a8f010a8c010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126c0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b6567767875331a100a057561746f6d12073130303030303012200a0812040a020801180712140a0e0a0575736f76721205333235303010d0f7071a06736f76722d31202a"
+      },
+      "expected": {
+        "error_code": "MALFORMED_SIGN_DOC",
+        "outcome": "summary derivation rejects a non-usovr send coin",
+        "stage": "library"
+      }
+    },
+    {
+      "id": "neg-008",
+      "category": "WRONG_CHAIN_ID",
+      "vector": {
+        "account_number": "42",
+        "amount_base_units": "1000000",
+        "chain_id": "sovr-2",
+        "denom": "usovr",
+        "fee_base_units": "32500",
+        "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+        "gas_limit": "130000",
+        "memo": "wrong chain",
+        "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+        "sequence": "7",
+        "sign_doc_bytes_hex": "0a9c010a8c010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126c0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b6567767875331a100a0575736f7672120731303030303030120b77726f6e6720636861696e12680a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b6212040a020801180712140a0e0a0575736f76721205333235303010d0f7071a06736f76722d32202a",
+        "signature_hex": "3b089760d41c522b7af5ada2fedaf8a9d1f0a6d4fda886e47df556e00a5192ed20428c740d636a5a65619f3ca0fa8ba048814ce0655a7d5444e806cbec106526",
+        "to": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+        "tx_hash": "7571FF7CA5DC3FD409EEF9B79B9E89905498B739873F97ED9F8D4CF4DA046A0A",
+        "tx_raw_bytes_hex": "0a9c010a8c010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126c0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b6567767875331a100a0575736f7672120731303030303030120b77726f6e6720636861696e12680a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b6212040a020801180712140a0e0a0575736f76721205333235303010d0f7071a403b089760d41c522b7af5ada2fedaf8a9d1f0a6d4fda886e47df556e00a5192ed20428c740d636a5a65619f3ca0fa8ba048814ce0655a7d5444e806cbec106526"
+      },
+      "expected": {
+        "outcome": "signature verification fails on sovr-1 / CheckTx code != 0",
+        "stage": "chain_reject"
+      }
+    },
+    {
+      "id": "neg-009",
+      "category": "INCORRECT_SEQUENCE",
+      "vector": {
+        "account_number": "42",
+        "amount_base_units": "1000000",
+        "chain_id": "sovr-1",
+        "denom": "usovr",
+        "fee_base_units": "32500",
+        "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+        "gas_limit": "130000",
+        "memo": "wrong sequence",
+        "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+        "sequence": "999999",
+        "sign_doc_bytes_hex": "0a9f010a8c010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126c0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b6567767875331a100a0575736f7672120731303030303030120e77726f6e672073657175656e6365126a0a520a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b6212040a02080118bf843d12140a0e0a0575736f76721205333235303010d0f7071a06736f76722d31202a",
+        "signature_hex": "a7ede0071a8d1c6c34652d079c3d9957f815b660bc3ae3cb29d0b3d024cb6da674bfd99f12d2b710ebb43310c2ed7d71eb83df2b1ccb3e0fac0dadd3e98ceef6",
+        "to": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+        "tx_hash": "228E6C581BB8FA9349D6F88994FF56A974538530224331986469D585E4E819E4",
+        "tx_raw_bytes_hex": "0a9f010a8c010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126c0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b6567767875331a100a0575736f7672120731303030303030120e77726f6e672073657175656e6365126a0a520a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b6212040a02080118bf843d12140a0e0a0575736f76721205333235303010d0f7071a40a7ede0071a8d1c6c34652d079c3d9957f815b660bc3ae3cb29d0b3d024cb6da674bfd99f12d2b710ebb43310c2ed7d71eb83df2b1ccb3e0fac0dadd3e98ceef6"
+      },
+      "expected": {
+        "outcome": "CheckTx account sequence mismatch",
+        "stage": "chain_reject"
+      }
+    },
+    {
+      "id": "neg-010",
+      "category": "INSUFFICIENT_FEE",
+      "vector": {
+        "account_number": "42",
+        "amount_base_units": "1000000",
+        "chain_id": "sovr-1",
+        "denom": "usovr",
+        "fee_base_units": "1",
+        "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+        "gas_limit": "200000",
+        "memo": "insufficient fee",
+        "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+        "sequence": "7",
+        "sign_doc_bytes_hex": "0aa1010a8c010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126c0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b6567767875331a100a0575736f76721207313030303030301210696e73756666696369656e742066656512640a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b6212040a020801180712100a0a0a0575736f767212013110c09a0c1a06736f76722d31202a",
+        "signature_hex": "90abee795a18f994ba727f633a8c181037b8d78c1fec5b7d321f747a3995670a57f314ca10ddc10e3c6ced90fb554fe7316a297aa1e2aff0c90dcd928190df3a",
+        "to": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+        "tx_hash": "5EA099331A1CF5ABD1ABB50F4B7B62221559A5F18321C36F8083FD2BCC6D5FE2",
+        "tx_raw_bytes_hex": "0aa1010a8c010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126c0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b6567767875331a100a0575736f76721207313030303030301210696e73756666696369656e742066656512640a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b6212040a020801180712100a0a0a0575736f767212013110c09a0c1a4090abee795a18f994ba727f633a8c181037b8d78c1fec5b7d321f747a3995670a57f314ca10ddc10e3c6ced90fb554fe7316a297aa1e2aff0c90dcd928190df3a"
+      },
+      "expected": {
+        "outcome": "CheckTx insufficient fee under the x/globalfee floor",
+        "stage": "chain_reject"
+      }
+    },
+    {
+      "id": "neg-011",
+      "category": "INSUFFICIENT_FUNDS",
+      "vector": {
+        "account_number": "42",
+        "amount_base_units": "999999999999999000",
+        "chain_id": "sovr-1",
+        "denom": "usovr",
+        "fee_base_units": "32500",
+        "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+        "gas_limit": "130000",
+        "memo": "insufficient funds",
+        "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+        "sequence": "7",
+        "sign_doc_bytes_hex": "0aae010a97010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412770a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b6567767875331a1b0a0575736f767212123939393939393939393939393939393030301212696e73756666696369656e742066756e647312680a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b6212040a020801180712140a0e0a0575736f76721205333235303010d0f7071a06736f76722d31202a",
+        "signature_hex": "164fca6a382909960584c9b81595a918fb6d2848fa4c0885894d50555788350a18ad42ec3c0d7347c6d57189ad09e377e9598c5e93529b85ed334674c82465e5",
+        "to": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3",
+        "tx_hash": "1C81A15B432332B694193FED8BB08DCC0188367E3D2C62CB73A8E2BB5AC7AEFD",
+        "tx_raw_bytes_hex": "0aae010a97010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412770a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b6567767875331a1b0a0575736f767212123939393939393939393939393939393030301212696e73756666696369656e742066756e647312680a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b6212040a020801180712140a0e0a0575736f76721205333235303010d0f7071a40164fca6a382909960584c9b81595a918fb6d2848fa4c0885894d50555788350a18ad42ec3c0d7347c6d57189ad09e377e9598c5e93529b85ed334674c82465e5"
+      },
+      "expected": {
+        "outcome": "DeliverTx insufficient funds; fee still deducted; never credited",
+        "stage": "chain_reject"
+      }
+    },
+    {
+      "id": "neg-012",
+      "category": "MALFORMED_PUBKEY",
+      "vector": {
+        "account_number": "42",
+        "amount_base_units": "1000000",
+        "chain_id": "sovr-1",
+        "denom": "usovr",
+        "fee_base_units": "32500",
+        "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+        "gas_limit": "130000",
+        "memo": "malformed pubkey",
+        "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b",
+        "sequence": "7",
+        "sign_doc_bytes_hex": "0aa1010a8c010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126c0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b6567767875331a100a0575736f767212073130303030303012106d616c666f726d6564207075626b657912680a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b6212040a020801180712140a0e0a0575736f76721205333235303010d0f7071a06736f76722d31202a",
+        "signature_hex": "176980b1ed2de32994e08cc8ab376a8ed16eb6dfc18eed52cc7f45598f34c0dc3b021afbd4036f8ef67798924355f1eedb1698e9832cf46b5163e948d358c456",
+        "to": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3"
+      },
+      "expected": {
+        "outcome": "signature verification fails; assembly refuses the response",
+        "stage": "library"
+      }
+    },
+    {
+      "id": "neg-013",
+      "category": "INVALID_SIGNATURE",
+      "vector": {
+        "account_number": "42",
+        "amount_base_units": "1000000",
+        "chain_id": "sovr-1",
+        "denom": "usovr",
+        "fee_base_units": "32500",
+        "from": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+        "gas_limit": "130000",
+        "memo": "invalid signature",
+        "public_key_compressed_hex": "024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b62",
+        "sequence": "7",
+        "sign_doc_bytes_hex": "0aa2010a8c010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126c0a2b736f76723139726c34636d32686d7238616679346b6c6470787a33666b61346a6775713061657338323478122b736f7672316a726b6d646377677139347561616d78367a6178326c7565776c68663775346b6567767875331a100a0575736f76721207313030303030301211696e76616c6964207369676e617475726512680a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21024f4e2ad99c34d60b9ba6283c9431a8418af8673212961f97a77b6377fcd05b6212040a020801180712140a0e0a0575736f76721205333235303010d0f7071a06736f76722d31202a",
+        "signature_hex": "a693a0cd07c4f66b6156e4a60acf209fe1204a57f2e81ab17c85aa2f43872e947084d166446eb720e9e6c3d0b7a9f829bfbcfb6aa86e5c750a089cfc4c65c6c8",
+        "to": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3"
+      },
+      "expected": {
+        "outcome": "signature verification fails; assembly refuses the response",
+        "stage": "library"
+      }
+    },
+    {
+      "id": "neg-014",
+      "category": "DUPLICATE_WITHDRAWAL_ID",
+      "vector": {
+        "idempotency_key": "WD-2026-000123",
+        "submissions": "2"
+      },
+      "expected": {
+        "outcome": "second submission returns the original record; one signed transaction ever exists (FR-033)",
+        "stage": "adapter"
+      }
+    },
+    {
+      "id": "neg-015",
+      "category": "FAILED_TX_RESULT",
+      "vector": {
+        "raw_log": "insufficient funds",
+        "tx_code": "5"
+      },
+      "expected": {
+        "outcome": "tx_code != 0 is reported FAILED and never credited/confirmed (FR-029/FR-035)",
+        "stage": "adapter"
+      }
+    }
+  ]
+}

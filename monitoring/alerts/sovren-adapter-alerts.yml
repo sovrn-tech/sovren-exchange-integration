@@ -1,0 +1,140 @@
+# Sovren Exchange Integration Kit — adapter alert pack
+# (contracts/metrics.md, FR-049). One rule per contract row; adapter-level
+# rows live here, node-level rows (PeerCountLow, DiskUsageHigh) in
+# node-alerts.yml. Thresholds marked "exchange-tunable" are shipped
+# defaults, not policy.
+#
+# promtool check rules sovren-adapter-alerts.yml
+# promtool test rules tests/adapter-alerts.test.yml
+
+groups:
+  - name: sovren-adapter
+    rules:
+      - alert: ScannerLagHigh
+        expr: sovren_scanner_height_lag > 20
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "Deposit scanner is falling behind the chain tip"
+          description: "Scanner lag on {{ $labels.chain_id }} is {{ $value }} blocks (> 20 for 5m). Check node health and adapter logs."
+
+      - alert: NoNewBlocks
+        expr: increase(sovren_scanner_latest_chain_height[5m]) == 0
+        labels:
+          severity: page
+        annotations:
+          summary: "Chain height has not advanced in 5 minutes"
+          description: "No new blocks observed on {{ $labels.chain_id }} — chain halt or node outage."
+
+      - alert: WrongChainID
+        expr: sovren_chain_review_conditions_open{trigger="WRONG_CHAIN_ID"} > 0
+        labels:
+          severity: page
+        annotations:
+          summary: "Node reports a different chain_id than configured"
+          description: "The adapter opened a WRONG_CHAIN_ID chain-review condition on {{ $labels.chain_id }}. Crediting is gated until resolved."
+
+      - alert: NodesDisagree
+        expr: sum by (chain_id) (sovren_chain_review_conditions_open) > 0
+        labels:
+          severity: page
+        annotations:
+          summary: "Open chain-review condition (FR-044)"
+          description: "Primary and secondary nodes disagree (or another chain-review trigger fired) on {{ $labels.chain_id }}. Crediting is gated until resolved."
+
+      - alert: RPCGRPCUnavailable
+        # Elevated transport errors on either interface; pair with a
+        # blackbox/probe rule in deployments that run one.
+        expr: >
+          (sum by (chain_id) (increase(sovren_rpc_errors_total[5m])) > 10)
+          or
+          (sum by (chain_id) (increase(sovren_grpc_errors_total[5m])) > 10)
+        labels:
+          severity: page
+        annotations:
+          summary: "RPC/gRPC errors are elevated"
+          description: "More than 10 transport errors in 5m on {{ $labels.chain_id }}. Node endpoint degraded or unreachable."
+
+      - alert: SequenceMismatchRising
+        expr: increase(sovren_sequence_mismatch_total[15m]) > 0
+        labels:
+          # warn on first occurrence; page on repeat is an Alertmanager
+          # escalation policy (repeat_interval / severity routing).
+          severity: warn
+        annotations:
+          summary: "Sequence mismatches observed"
+          description: "Sequence reservations disagree with chain truth on {{ $labels.chain_id }}. Check sequences reconciliation before signing anything new."
+
+      - alert: WithdrawalFailureRateHigh
+        expr: >
+          sum by (chain_id) (increase(sovren_withdrawals_failed_total[15m]))
+          /
+          clamp_min(sum by (chain_id) (increase(sovren_withdrawals_broadcast_total[15m])), 1)
+          > 0.05
+        labels:
+          severity: page
+        annotations:
+          summary: "Withdrawal failure rate above 5%"
+          description: "Failed/broadcast withdrawal ratio over 15m exceeds 5% on {{ $labels.chain_id }}."
+
+      - alert: HotWalletBalanceLow
+        # Threshold exchange-tunable: 100 SOVR (100_000_000 usovr) default.
+        expr: sovren_hot_wallet_balance_usovr < 100000000
+        labels:
+          severity: warn
+        annotations:
+          summary: "Hot wallet balance below refill threshold"
+          description: "Hot wallet {{ $labels.address }} on {{ $labels.chain_id }} holds {{ $value }} usovr. Schedule a cold-to-hot transfer."
+
+      - alert: AbnormalFeeFundingVolume
+        # Fee-wallet FEE_FUND drain guardrail for the FEE_FUND sweep model.
+        # Threshold exchange-tunable: 50 SOVR (50_000_000 usovr) of fee-funding
+        # confirmed in 1h is well above normal per-sweep gas top-ups and points
+        # at a dust flood or an address-derivation bug draining the fee wallet.
+        expr: increase(sovren_fee_funding_usovr_total[1h]) > 50000000
+        for: 5m
+        labels:
+          severity: warn
+        annotations:
+          summary: "Abnormal fee-wallet funding volume"
+          description: "Fee-wallet FEE_FUND spend on {{ $labels.chain_id }} was {{ $value }} usovr in the last hour. Check for a dust flood / derivation bug and confirm sweeps.fee_wallet_max_spend_usovr is set."
+
+      - alert: ReconciliationDiscrepancy
+        expr: increase(sovren_reconciliation_discrepancies_total[1m]) > 0
+        labels:
+          severity: page
+        annotations:
+          summary: "Reconciliation discrepancy (zero-tolerance)"
+          description: "A ledger-vs-chain difference was detected on {{ $labels.chain_id }}. Follow docs/incident-response.md — pause crediting first, investigate second."
+
+      - alert: DepositBacklog
+        # Threshold exchange-tunable.
+        expr: sovren_deposit_backlog > 100
+        for: 10m
+        labels:
+          severity: warn
+        annotations:
+          summary: "Creditable deposits are not being credited"
+          description: "{{ $value }} deposits on {{ $labels.chain_id }} are CREDITABLE but uncredited for 10m — crediting paused, gated, or stalled."
+
+      - alert: UpgradeHeightApproaching
+        # sovren_upgrade_plan_height is emitted by the adapter's upgrade-plan
+        # poll; series absent (alert idle) until a plan exists.
+        expr: >
+          (sovren_upgrade_plan_height - on(chain_id) sovren_scanner_latest_chain_height < 5000)
+          and sovren_upgrade_plan_height > 0
+        labels:
+          severity: warn
+          action: ticket
+        annotations:
+          summary: "Scheduled chain upgrade within 5000 blocks"
+          description: "Upgrade plan height on {{ $labels.chain_id }} is near. Stage the new binary per docs/upgrades.md."
+
+      - alert: UnsupportedBinaryVersion
+        expr: sovren_unsupported_binary_version > 0
+        labels:
+          severity: page
+        annotations:
+          summary: "Node binary/app version does not match the network manifest"
+          description: "Manifest/app-version mismatch on {{ $labels.chain_id }}. Do not process deposits/withdrawals on an unsupported binary."

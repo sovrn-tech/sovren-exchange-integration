@@ -1,0 +1,68 @@
+{
+  "title": "Sovren Node — Health",
+  "uid": "sovren-node-health",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "timezone": "utc",
+  "time": { "from": "now-6h", "to": "now" },
+  "refresh": "15s",
+  "tags": ["sovren", "exchange-kit", "node"],
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Node block height",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        { "expr": "cometbft_consensus_height", "legendFormat": "consensus height" },
+        { "expr": "sovren_scanner_latest_chain_height", "legendFormat": "adapter-observed height" }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Peers (alert < 2)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [{ "expr": "cometbft_p2p_peers", "legendFormat": "peers" }]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Block interval (s)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        { "expr": "cometbft_consensus_block_interval_seconds", "legendFormat": "interval" }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Mempool size",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [{ "expr": "cometbft_mempool_size", "legendFormat": "txs" }]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Disk usage % (alert > 85%)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "(1 - node_filesystem_avail_bytes{fstype!~\"tmpfs|overlay\"} / node_filesystem_size_bytes{fstype!~\"tmpfs|overlay\"}) * 100",
+          "legendFormat": "{{mountpoint}}"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Adapter transport errors against this node (per 5m)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        { "expr": "sum by (endpoint) (increase(sovren_rpc_errors_total[5m]))", "legendFormat": "rpc {{endpoint}}" },
+        { "expr": "sum by (endpoint) (increase(sovren_grpc_errors_total[5m]))", "legendFormat": "grpc {{endpoint}}" }
+      ]
+    }
+  ]
+}

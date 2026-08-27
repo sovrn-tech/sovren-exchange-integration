@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "kit_version": "0.1.0",
+  "UNSAFE_TEST_ONLY": true,
+  "vectors": [
+    {
+      "id": "amt-001",
+      "display": "1",
+      "base_units": "1000000",
+      "valid": true
+    },
+    {
+      "id": "amt-002",
+      "display": "1.0",
+      "base_units": "1000000",
+      "valid": true
+    },
+    {
+      "id": "amt-003",
+      "display": "10.25",
+      "base_units": "10250000",
+      "valid": true
+    },
+    {
+      "id": "amt-004",
+      "display": "0.000001",
+      "base_units": "1",
+      "valid": true
+    },
+    {
+      "id": "amt-005",
+      "display": "0",
+      "base_units": "0",
+      "valid": true
+    },
+    {
+      "id": "amt-006",
+      "display": "0.5",
+      "base_units": "500000",
+      "valid": true
+    },
+    {
+      "id": "amt-007",
+      "display": "123456.654321",
+      "base_units": "123456654321",
+      "valid": true
+    },
+    {
+      "id": "amt-008",
+      "display": "999999999.999999",
+      "base_units": "999999999999999",
+      "valid": true
+    },
+    {
+      "id": "amt-009",
+      "display": "1000000000",
+      "base_units": "1000000000000000",
+      "valid": true
+    },
+    {
+      "id": "amt-010",
+      "display": "0.000010",
+      "base_units": "10",
+      "valid": true
+    },
+    {
+      "id": "amt-inv-001",
+      "display": "0.0000001",
+      "valid": false,
+      "error_code": "AMOUNT_TOO_MANY_DECIMALS"
+    },
+    {
+      "id": "amt-inv-002",
+      "display": "1.0000000",
+      "valid": false,
+      "error_code": "AMOUNT_TOO_MANY_DECIMALS"
+    },
+    {
+      "id": "amt-inv-003",
+      "display": "-1",
+      "valid": false,
+      "error_code": "AMOUNT_NEGATIVE"
+    },
+    {
+      "id": "amt-inv-004",
+      "display": "-0.5",
+      "valid": false,
+      "error_code": "AMOUNT_NEGATIVE"
+    },
+    {
+      "id": "amt-inv-005",
+      "display": "1e6",
+      "valid": false,
+      "error_code": "AMOUNT_SCIENTIFIC_NOTATION"
+    },
+    {
+      "id": "amt-inv-006",
+      "display": "1.5E-3",
+      "valid": false,
+      "error_code": "AMOUNT_SCIENTIFIC_NOTATION"
+    },
+    {
+      "id": "amt-inv-007",
+      "display": "1,000",
+      "valid": false,
+      "error_code": "AMOUNT_COMMAS"
+    },
+    {
+      "id": "amt-inv-008",
+      "display": "",
+      "valid": false,
+      "error_code": "AMOUNT_EMPTY"
+    },
+    {
+      "id": "amt-inv-009",
+      "display": "abc",
+      "valid": false,
+      "error_code": "AMOUNT_NOT_NUMERIC"
+    },
+    {
+      "id": "amt-inv-010",
+      "display": "1.2.3",
+      "valid": false,
+      "error_code": "AMOUNT_NOT_NUMERIC"
+    },
+    {
+      "id": "amt-inv-011",
+      "display": ".5",
+      "valid": false,
+      "error_code": "AMOUNT_NOT_NUMERIC"
+    },
+    {
+      "id": "amt-inv-012",
+      "display": "1.",
+      "valid": false,
+      "error_code": "AMOUNT_NOT_NUMERIC"
+    },
+    {
+      "id": "amt-inv-013",
+      "display": " 1",
+      "valid": false,
+      "error_code": "AMOUNT_NOT_NUMERIC"
+    },
+    {
+      "id": "amt-inv-014",
+      "display": "+1",
+      "valid": false,
+      "error_code": "AMOUNT_NOT_NUMERIC"
+    },
+    {
+      "id": "amt-inv-015",
+      "display": "01",
+      "valid": false,
+      "error_code": "AMOUNT_NOT_NUMERIC"
+    },
+    {
+      "id": "amt-inv-016",
+      "display": "1000000000.000001",
+      "valid": false,
+      "error_code": "AMOUNT_EXCEEDS_MAX"
+    },
+    {
+      "id": "amt-inv-017",
+      "display": "1000000001",
+      "valid": false,
+      "error_code": "AMOUNT_EXCEEDS_MAX"
+    }
+  ]
+}
