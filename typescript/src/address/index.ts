@@ -118,10 +118,12 @@ export const PROHIBITED_MODULE_NAMES: readonly string[] = [
   "disputebonds",
   "distribution",
   "distro",
+  "evmbridge", // feature 007: EVM-bridge policy module (v0.26.0-evm-bridge)
   "exchange_allocation",
   "fee_collector",
   "gateway",
   "gov", // client-only extra: the chain permits MsgDeposit into gov, but a plain withdrawal MsgSend strands funds.
+  "hyperlane", // feature 007: Hyperlane x/core mailbox/ISM stack
   "identity",
   "inference",
   "interchainaccounts",
@@ -139,6 +141,7 @@ export const PROHIBITED_MODULE_NAMES: readonly string[] = [
   "track_a",
   "transfer",
   "vectordb",
+  "warp", // feature 007: Hyperlane x/warp token module
   "wasm",
 ];
 

@@ -117,14 +117,14 @@ func TestValidateAccountAddressStrict(t *testing.T) {
 }
 
 // TestDefaultProhibitedModuleAccounts pins the kit's client-side withdrawal
-// blocklist (33 entries): the chain's 32 blocked module accounts plus gov,
+// blocklist (36 entries): the chain's 35 blocked module accounts plus gov,
 // a deliberate client-only addition. The 32 chain-mirrored names are kept in
 // sync with the chain by app/exchange_kit_module_accounts_test.go in the sbn
 // repo; this test guards the kit half (count, a representative sample, the
 // client-only gov entry, and the deliberate exclusion of mint).
 func TestDefaultProhibitedModuleAccounts(t *testing.T) {
 	p := DefaultProhibitedModuleAccounts()
-	require.Len(t, p, 33)
+	require.Len(t, p, 36)
 
 	// A representative sample of blocked accounts must be present, by
 	// derived address (never by name — membership is address-based).

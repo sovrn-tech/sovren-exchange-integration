@@ -38,7 +38,7 @@ spec:
           # Pin by digest; the per-release digest is published with the node
           # release at sovrn-tech/sovr-networks and verifiable against the
           # public ghcr.io/sovrn-tech/sovrd package.
-          image: ghcr.io/sovrn-tech/sovrd@sha256:2d2fbb8f48986b5ced9ca01ad515b41e5c34844ef43ba77ceb252ab938ecb396 # injected at kit release (plan D4)
+          image: ghcr.io/sovrn-tech/sovrd@sha256:4157fc01ba801531eb50144af509f1fd5c4276472010b849cf3a946e9f5e9e0e # injected at kit release (plan D4)
           imagePullPolicy: IfNotPresent
           args: ["seed-bundle"]
           volumeMounts:
@@ -49,7 +49,7 @@ spec:
               readOnly: true
       containers:
         - name: sovren-node
-          image: ghcr.io/sovrn-tech/sovrd@sha256:2d2fbb8f48986b5ced9ca01ad515b41e5c34844ef43ba77ceb252ab938ecb396 # injected at kit release (plan D4)
+          image: ghcr.io/sovrn-tech/sovrd@sha256:4157fc01ba801531eb50144af509f1fd5c4276472010b849cf3a946e9f5e9e0e # injected at kit release (plan D4)
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:

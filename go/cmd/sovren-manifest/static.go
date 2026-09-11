@@ -94,6 +94,11 @@ var staticMainnet = staticNetwork{
 		"d41608b237019c09281c9542bbe90532b03b65ea@sentry2b.mainnet.sovrchain.net:32221",
 		"b8c805f050e090edf52fcd5169e239826ffb21a5@sentry3a.mainnet.sovrchain.net:32240",
 		"a49544b198f062c893b849a37389a227a51b40d4@sentry3b.mainnet.sovrchain.net:32241",
+		// Public block-archive peer (earliest_block_height=1) — the only public
+		// node retaining the full blockstore from genesis; required for a
+		// from-genesis sync and its base=1 avoids the CometBFT all-pruned-peers
+		// wedge. See docs/node-operations.md. Sentries above keep a ~100k window.
+		"56715ebd90a2fec02dd7752e4b6e0c740de8fe94@archive1.mainnet.sovrchain.net:32101",
 	},
 
 	Explorer: "https://sovrscan.com",
@@ -132,6 +137,9 @@ var staticTestnet = staticNetwork{
 		"c5385795047ac6a11d3328362033721ed3213657@sentry2b.testnet.sovrchain.net:32221",
 		"8cfacb1a936e3b848923a6fe631690336dc7717e@sentry3a.testnet.sovrchain.net:32240",
 		"dbf89f924f158c77222343d322e57eb1042b0a4c@sentry3b.testnet.sovrchain.net:32241",
+		// Public block-archive peer (earliest_block_height=1) — from-genesis
+		// history peer; base=1 avoids the CometBFT all-pruned wedge.
+		"01e7a0fa3c7a8e7d0d96673d7a3127b2b9912228@archive1.testnet.sovrchain.net:32101",
 	},
 
 	// Faucet published 2026-07-24 (plan D2 closed); sovren-cert fund reads it

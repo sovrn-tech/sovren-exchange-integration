@@ -104,7 +104,47 @@ profile default). A scanner-only node may run `null` to save ~30–50 % of
 long-run disk growth. The `psql` indexer option is unsupported by the kit
 profiles.
 
-## 5. State-sync consumer guide
+## 5. Bring-up paths (state-sync vs. archive-snapshot vs. from-genesis)
+
+Three ways to bring a node to the chain tip:
+
+- **State-sync (fastest, no history):** restore recent application state from
+  a snapshot in minutes-to-hours. Best when you only need to be at tip and
+  running, and the only supported way to rejoin after a missed upgrade (§6).
+  The node has no block history before the restore height. Details below.
+- **Archive-snapshot restore (fast, full history):** extract a raw copy of an
+  already-synced archive node's data directory (blockstore + state store +
+  app DB — not just application state) and resume via normal block sync on
+  the **current** binary. Gets you full history from height 1 at
+  state-sync speed, because the expensive replay was already done once by
+  whoever produced the snapshot — you're restoring its result, not
+  recomputing it. No historical binary ladder needed: the copied state
+  already reflects every upgrade having run. Details below.
+- **From-genesis (slowest, fully self-verifying):** replay and re-execute
+  every block from height 1 yourself. Use this when you don't want to trust
+  anyone else's copy of history — an independent audit. Two requirements
+  that are easy to miss:
+  1. **The archive peer.** All standard public peers (seeds/sentries) keep a
+     rolling ~100k-block retention window, so they cannot serve early history.
+     `network/<net>/network.yaml` includes a dedicated **block-archive peer**
+     (`archive1.<net>.sovrchain.net`, `earliest_block_height=1`) that retains
+     the full blockstore. It is in `persistent_peers` by default. Its presence
+     is also what lets a fresh node's peer set report a real max height —
+     without a full-history (`base=1`) peer, CometBFT v0.38.x can mis-read an
+     all-pruned peer set as "caught up" and stall at height 0. (It is also
+     the intended source for archive snapshots, below.)
+  2. **The historical binary ladder.** Consensus-breaking upgrades mean a
+     single current binary cannot re-execute the whole chain — each height
+     range must be replayed by the binary that produced it, swapping at the
+     recorded upgrade heights (cosmovisor-style). The published ladder (binary
+     set + upgrade-height map) lives with the node releases; follow it in
+     order. A single modern binary will halt with an AppHash mismatch at the
+     first upgrade boundary.
+
+  Expect roughly a day of compute for a full mainnet from-genesis replay,
+  versus minutes-to-hours for either snapshot path above.
+
+### State-sync consumer guide
 
 State-sync bootstraps a node from a recent snapshot instead of replaying
 from genesis — minutes-to-hours instead of days, and the only supported
@@ -117,14 +157,19 @@ second node):
 - `rpc_servers` — at least two post-upgrade RPC endpoints
 - `trust_height` / `trust_hash` — a recent block height and hash
 
-Get a fresh trust pair from a trusted RPC:
+Get a fresh trust pair, **cross-checked across your two anchors** (a mismatch
+means one is on a fork — do not proceed), with the helper:
 
 ```bash
-RPC=https://rpc.sovrchain.net
-H=$(curl -s $RPC/status | jq -r .result.sync_info.latest_block_height)
-TRUST_HEIGHT=$((H - 1000))
-TRUST_HASH=$(curl -s "$RPC/block?height=$TRUST_HEIGHT" | jq -r .result.block_id.hash)
+scripts/derive-trust-params.sh https://rpc.sovrchain.net:443 http://my-second-node:26657 >> config.toml
 ```
+
+It queries both anchors, picks a trust height safely behind their min height,
+and fails closed if they disagree on the block hash there. (Manually, that is
+`TRUST_HEIGHT=$((H - 2000))` and comparing `/block?height=$TRUST_HEIGHT`
+`.result.block_id.hash` from both — the script just makes the cross-check
+mandatory. Until a second public Sovren RPC is published, the second anchor is
+your own already-synced node.)
 
 Configure `config.toml` before first start (or after wiping `data/`):
 
@@ -152,6 +197,107 @@ Caveats:
   with deep history if you need historical backfill, or backfill through
   the public endpoints.
 
+### Archive-snapshot consumer guide
+
+An archive-snapshot restore gives you a node with full block history without
+either the from-genesis binary ladder or state-sync's history gap. It trades
+the from-genesis path's "recompute everything yourself" guarantee for "verify
+a copy against consensus" — the same trust model as state-sync's
+`trust_hash`, just applied to the whole copied history instead of one height.
+
+**What "verified" means here.** A raw directory copy carries no built-in
+light-client proof, so verification is two independent, both-required checks:
+
+1. **Integrity** — the tarball's sha256 matches the manifest published
+   alongside it (nothing corrupted or tampered in transit/storage).
+2. **Consensus match** — after extracting the snapshot and starting `sovrd`
+   against it (peers/sync not required for this step), the block hash the
+   restored node itself has stored at the snapshot height must match **two
+   independent trusted RPC anchors'** block hash at that same height. This is
+   the identical fail-closed, two-anchor cross-check `derive-trust-params.sh`
+   uses for state-sync's `trust_hash`, applied to the snapshot's claimed
+   height instead of a freshly derived one. If local + both anchors agree,
+   every block chained back to genesis inside the copy is provably canonical
+   — not merely intact.
+
+Steps, using `verify-archive-snapshot.sh` (mirrors `derive-trust-params.sh`'s
+two-anchor posture):
+
+```bash
+# 1. Resolve the newest via <baseUrl>/<network>/archive/latest.json[.sig], download
+#    the manifest + signature + tarball, then run the gates IN ORDER —
+#    authenticity FIRST, then integrity — before touching data/:
+scripts/verify-archive-snapshot.sh signature \
+  sovr-sovr-1-archive-<height>.json sovr-sovr-1-archive-<height>.json.sig \
+  <trusted-identity> <oidc-issuer>          # or: --key cosign.pub
+scripts/verify-archive-snapshot.sh checksum \
+  sovr-sovr-1-archive-<height>.tar.zst sovr-sovr-1-archive-<height>.json
+
+# 2. Stop the node (or point at fresh config/ + empty data/), extract, restart:
+systemctl stop sovrd   # or: docker compose stop sovr
+rm -rf "$HOME/.sovr/data"
+tar --zstd -xf sovr-sovr-1-archive-<height>.tar.zst -C "$HOME/.sovr"
+systemctl start sovrd  # or: docker compose start sovr
+
+# 3. Once local RPC is serving, cross-check the snapshot height against two
+#    independent trusted anchors before trusting anything the node reports:
+scripts/verify-archive-snapshot.sh crosscheck http://localhost:26657 \
+  https://rpc.sovrchain.net:443 http://my-second-node:26657 <height>
+```
+
+**Trusted signing key (mainnet `sovr-1`).** Official archive snapshots are
+signed with a dedicated **keyed** cosign key — use the `--key cosign.pub` form
+above (the keyless `<identity> <oidc-issuer>` form does not apply to them). Point
+`--key` at the mainnet snapshot signing key published with the node distribution
+(a P-256 cosign public key). Obtain it over a trusted channel and confirm its
+fingerprint out-of-band before relying on it; the testnet (`test-sovr-1`)
+publisher uses a **different** key. The key is distributed as a file rather than
+inlined here so this kit ships no embedded key material.
+
+If step 3 fails closed (local vs. either anchor disagree), the restore is not
+trustworthy — do not proceed. Re-download from a different source, or fall
+back to state-sync or from-genesis.
+
+After a successful cross-check, verify chain ID, height, and app version
+against the manifest (§3 signals 13–14). No `[statesync]` config is needed —
+the copy already carries state past its own restore height, so the node
+proceeds straight into normal block sync to tip.
+
+Caveats:
+
+- The snapshot is only as fresh as its last production run; blocks between
+  the snapshot height and tip are filled in by ordinary block sync
+  afterward, same as any node reconnecting after downtime.
+- Point-in-time consistency matters: a snapshot taken by hot-copying a live
+  node's data directory can be corrupt. The producer-side
+  `scripts/build-archive-snapshot.sh` (top-level repo, not the kit — this is
+  an infra-operator tool, not something exchange operators run) stops the
+  source node before copying for exactly this reason.
+- **Publishing (spec 011 — now wired):** `scripts/publish-snapshot.sh` is the
+  destination step — it cosign-signs the manifest and uploads {tarball, manifest,
+  sig} to object storage + CDN with an atomic `latest.json` index and retention.
+  Run it as `build-archive-snapshot.sh --publish-cmd 'scripts/publish-snapshot.sh
+  --bucket <remote:bucket> --network <net> --keyless'`. Use a **separate bucket
+  per network** (mainnet vs testnet) so each has its own write credential — a
+  testnet publisher token then can't overwrite mainnet's `latest.json`. The
+  bucket must serve **anonymous public reads** over HTTPS: on **DigitalOcean
+  Spaces / AWS S3** that is granted per-object at upload time, which
+  `publish-snapshot.sh` does by default (`--acl public-read`, via
+  `RCLONE_S3_ACL`); on **Cloudflare R2** object ACLs are ignored (public is a
+  custom domain / r2.dev) so pass `--no-acl` there. The **daily producer
+  CronJob** + the **dedicated snapshot node** are cluster-side workloads you run in
+  your own cluster automation, and the trusted cosign identity/public key is
+  published alongside the snapshots. The turn-key consumer path is the Helm chart's **`mode=snapshot`**
+  (`helm/sovr-node`): it resolves `latest.json`, runs the same
+  signature → cross-check → checksum gates (fail-closed) in a curl init container,
+  extracts, and blocksyncs to head — no internal access. The only operator input
+  is the cosign identity/key plus a **second** independent cross-check anchor
+  (the chart pre-fills the public RPC as the first; supplying only one fails
+  closed by design — a lone anchor can't out-vote a lie). Remaining go-live:
+  stand up the CronJob + snapshot node + bucket + cosign identity, then run the
+  testnet end-to-end dry run.
+  (`scripts/README.md`).
+
 ## 6. Missed-upgrade recovery
 
 A node offline during a chain-upgrade halt **cannot rejoin via normal block
@@ -165,7 +311,10 @@ Recovery, in priority order:
 
 1. **State-sync from post-upgrade state** (§5) with a `trust_height` past
    the upgrade height, on the **new** binary/image. The node restores
-   post-upgrade state and never replays the upgrade boundary.
+   post-upgrade state and never replays the upgrade boundary. An
+   **archive-snapshot restore** (§5) taken after the upgrade height works
+   the same way and additionally leaves you with full history instead of a
+   bare restore point — use it if a recent-enough snapshot is available.
 2. **Wipe and state-sync.** Stop the node, delete `data/` (keep `config/`),
    then option 1. Operationally identical, simpler when local state has no
    value. (`sovrd comet unsafe-reset-all` equivalently resets, preserving

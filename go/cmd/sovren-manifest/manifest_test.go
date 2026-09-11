@@ -185,7 +185,7 @@ func TestGenerateTestnetUnblocked(t *testing.T) {
 	require.True(t, ok)
 	require.Empty(t, st.Blocked)
 	require.Len(t, st.Seeds, 2)
-	require.Len(t, st.PersistentPeers, 6)
+	require.Len(t, st.PersistentPeers, 7) // +archive-1
 	for _, p := range append(append([]string{}, st.Seeds...), st.PersistentPeers...) {
 		require.Contains(t, p, ".testnet.sovrchain.net:")
 	}

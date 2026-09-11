@@ -90,7 +90,7 @@ describe("validateAccountAddress", () => {
 
   it("defaultProhibitedModuleAccounts rejects every module account + the legacy address", async () => {
     const prohibited = defaultProhibitedModuleAccounts();
-    expect(PROHIBITED_MODULE_NAMES.length).toBe(32);
+    expect(PROHIBITED_MODULE_NAMES.length).toBe(35);
     expect(prohibited.size).toBe(PROHIBITED_MODULE_NAMES.length + 1); // + legacy address
 
     // Every module account (fee_collector, gov, settlement, …) is rejected.

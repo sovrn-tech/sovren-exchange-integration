@@ -36,9 +36,9 @@
   },
   "codebase": {
     "git_repo": "https://github.com/sovrn-tech/sovr-networks",
-    "recommended_version": "v0.23.0",
+    "recommended_version": "v0.24.0",
     "compatible_versions": [
-      "v0.23.0"
+      "v0.24.0"
     ],
     "sdk": {
       "type": "cosmos",
@@ -60,9 +60,9 @@
       "name": "sovr-1",
       "genesis_url": "https://github.com/sovrn-tech/sovr-networks/raw/main/mainnet/genesis.json?checksum=sha256:04529695e7ccfe32fcf3bc8031c343056d27cbe4aa3b3046027e27065bb9a855"
     },
-    "tag": "v0.23.0",
+    "tag": "v0.24.0",
     "binaries": {
-      "linux/amd64": "https://github.com/sovrn-tech/sovr-networks/releases/download/v0.23.0/sovrd-v0.23.0-linux-amd64"
+      "linux/amd64": "https://github.com/sovrn-tech/sovr-networks/releases/download/v0.24.0/sovrd-v0.24.0-linux-amd64"
     }
   },
   "peers": {
@@ -107,6 +107,11 @@
       {
         "id": "a49544b198f062c893b849a37389a227a51b40d4",
         "address": "sentry3b.mainnet.sovrchain.net:32241",
+        "provider": "sovren"
+      },
+      {
+        "id": "56715ebd90a2fec02dd7752e4b6e0c740de8fe94",
+        "address": "archive1.mainnet.sovrchain.net:32101",
         "provider": "sovren"
       }
     ]

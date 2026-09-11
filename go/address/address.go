@@ -181,6 +181,9 @@ func DefaultProhibitedModuleAccounts() PSet {
 		"disputebonds",
 		"distribution",
 		"distro",
+		// feature 007 (EVM bridge, v0.26.0-evm-bridge): the Hyperlane stack
+		// (x/core "hyperlane", x/warp) and the x/evmbridge policy module.
+		"evmbridge",
 		"exchange_allocation",
 		"fee_collector",
 		"gateway",
@@ -188,6 +191,7 @@ func DefaultProhibitedModuleAccounts() PSet {
 		// MsgSend to gov strands funds even though the chain permits
 		// MsgDeposit transfers into the same account.
 		"gov",
+		"hyperlane",
 		"identity",
 		"inference",
 		"interchainaccounts",
@@ -205,6 +209,7 @@ func DefaultProhibitedModuleAccounts() PSet {
 		"track_a",
 		"transfer",
 		"vectordb",
+		"warp",
 		"wasm",
 	}
 	p := make(PSet, len(names)+1)

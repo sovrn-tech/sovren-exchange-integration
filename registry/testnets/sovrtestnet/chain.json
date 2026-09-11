@@ -34,10 +34,10 @@
   },
   "codebase": {
     "git_repo": "https://github.com/sovrn-tech/sovr-networks",
-    "recommended_version": "v0.23.1-rc1",
+    "recommended_version": "v0.24.0-rc1",
     "compatible_versions": [
-      "v0.23.0",
-      "v0.23.1-rc1"
+      "v0.24.0-rc1",
+      "v0.24.0"
     ],
     "sdk": {
       "type": "cosmos",
@@ -102,6 +102,11 @@
       {
         "id": "dbf89f924f158c77222343d322e57eb1042b0a4c",
         "address": "sentry3b.testnet.sovrchain.net:32241",
+        "provider": "sovren"
+      },
+      {
+        "id": "01e7a0fa3c7a8e7d0d96673d7a3127b2b9912228",
+        "address": "archive1.testnet.sovrchain.net:32101",
         "provider": "sovren"
       }
     ]

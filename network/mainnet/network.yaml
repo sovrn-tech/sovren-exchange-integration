@@ -25,7 +25,7 @@ versions:
   ibc_go: v10.5.0
   cosmwasm_wasmd: v0.60.7
   go: "1.25.7"
-  app: v0.23.0
+  app: v0.24.0
 fees:
   # minimum_gas_price mirrors the live x/globalfee floor (rule 3).
   minimum_gas_price: "0.001usovr"
@@ -55,6 +55,7 @@ peers:
     - "d41608b237019c09281c9542bbe90532b03b65ea@sentry2b.mainnet.sovrchain.net:32221"
     - "b8c805f050e090edf52fcd5169e239826ffb21a5@sentry3a.mainnet.sovrchain.net:32240"
     - "a49544b198f062c893b849a37389a227a51b40d4@sentry3b.mainnet.sovrchain.net:32241"
+    - "56715ebd90a2fec02dd7752e4b6e0c740de8fe94@archive1.mainnet.sovrchain.net:32101"
 links:
   explorer: "https://sovrscan.com"
   faucet: null

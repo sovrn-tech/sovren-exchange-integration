@@ -13,7 +13,7 @@ describe("public API — module-account blocklist surface", () => {
     expect(typeof pkg.defaultProhibitedModuleAccounts).toBe("function");
     expect(typeof pkg.moduleAccountAddress).toBe("function");
     expect(Array.isArray(pkg.PROHIBITED_MODULE_NAMES)).toBe(true);
-    expect(pkg.PROHIBITED_MODULE_NAMES.length).toBe(32);
+    expect(pkg.PROHIBITED_MODULE_NAMES.length).toBe(35);
     expect(typeof pkg.LEGACY_PROHIBITED_ADDRESS).toBe("string");
     expect(pkg.LEGACY_PROHIBITED_ADDRESS.startsWith("sovr1")).toBe(true);
   });
