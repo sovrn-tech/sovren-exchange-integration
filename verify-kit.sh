@@ -25,8 +25,8 @@
 # 3 missing prerequisites.
 ###############################################################
 
-KIT_VERSION="0.1.1-dev"
-APP_VERSION="v0.24.0"
+KIT_VERSION="0.2.0"
+APP_VERSION="v0.27.1"
 
 KIT_ROOT="$(cd "$(dirname "$0")" && pwd)"
 MODE="${1:-full}"

@@ -73,7 +73,7 @@ release record).
 | 22 | Chain-registry metadata | `registry/` (validated against pinned schemas) | shipped |
 | 23 | Upgrade-notification procedure | `docs/upgrades.md` | shipped |
 | 24 | Incident contacts | `docs/contacts.md` | shipped (document + concrete FR-053 values published; verified resolvable by export stage 3 + cert G1) |
-| 25 | Security-audit reports | `audit/` (injected per release) | pending — external security review (GA-blocking) |
+| 25 | Security-audit reports | `audit/exchange-surface-security-review-2026-09-11.md` (injected per release) | shipped — exchange-surface review complete (SC-010 upheld); Sovren self-certification under a recorded risk acceptance (see `docs/security.md` "Audit reports (D9)" and §6 of the report) |
 | 26 | Technical integration certification suite | `go/cmd/sovren-cert/`, `certification/` | shipped |
 
 Reference implementations backing the inventory: Go library + reference

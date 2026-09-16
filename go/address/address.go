@@ -149,8 +149,8 @@ const legacyRenamedModuleAccountAddress = "sovr1evp0da9u6kzn5c3j745qyj379grxhhzw
 //
 // It is the chain's blocked-module-account set PLUS gov, and is deliberately
 // NOT identical to the chain's bank blocklist:
-//   - The 31 names below plus legacyRenamedModuleAccountAddress reproduce the
-//     chain's 32 blocked accounts. The one renamed-module account is pinned by
+//   - The 34 names below plus legacyRenamedModuleAccountAddress reproduce the
+//     chain's 35 blocked accounts. The one renamed-module account is pinned by
 //     address, never by its retired internal name (see
 //     legacyRenamedModuleAccountAddress).
 //   - gov is a CLIENT-ONLY addition. The chain omits gov from its bank
@@ -163,12 +163,12 @@ const legacyRenamedModuleAccountAddress = "sovr1evp0da9u6kzn5c3j745qyj379grxhhzw
 //     exists to block.
 //
 // The kit hardcodes the names (and the one legacy address) to keep itself free
-// of any chain import. The 32 chain-mirrored entries are kept in sync by a
+// of any chain import. The 35 chain-mirrored entries are kept in sync by a
 // drift test in the sbn repo (app/exchange_kit_module_accounts_test.go) that
 // fails if the chain adds or removes a blocked module account; that test
 // guards only the chain-mirrored names, and gov is pinned as the intentional
-// client-only extra by address_test.go here. There are 33 entries in total:
-// 32 names below plus the legacy address.
+// client-only extra by address_test.go here. There are 36 entries in total:
+// 35 names below plus the legacy address.
 func DefaultProhibitedModuleAccounts() PSet {
 	names := []string{
 		"auction",

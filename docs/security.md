@@ -165,9 +165,22 @@ infrastructure, not the integration's data plane.
 
 The exchange-surface security review (FR-062 — including the module-account
 blocklist review and confirmation that plain transfers preserve the
-closed-loop supply invariants) ships **inside the kit** under
-`exchange-kit/audit/` (plan D9); the export pipeline injects the report and
-its checksum at release. Until D9 closes, `audit/` carries the review scope
-and status stub — a kit without a completed D9 report is not GA (SC-010).
-Verify the report's checksum against `checksums.txt` like any other
-artifact.
+closed-loop supply invariants) ships **inside the kit** under `audit/` (plan
+D9); the export pipeline injects the report and its checksum at release.
+Verify the report's checksum against `checksums.txt` like any other artifact.
+
+> **Status: complete (self-certified 2026-09-11).** The exchange-surface
+> review is documented in `audit/exchange-surface-security-review-2026-09-11.md`.
+> The SC-010 governing statement is upheld across all seven FR-062 dimensions
+> and every finding is remediated in the shipped kit. **This report is a Sovren
+> self-certification, not an externally countersigned audit:** an independent
+> external review was performed and its findings remediated, but the external
+> reviewer did not countersign into the repository, so Sovren certifies
+> completion under a recorded, executive-approved risk acceptance. Read §6 of
+> the report before relying on it — an exchange that requires an independent
+> third-party audit as a listing precondition should treat that section as the
+> disclosure of that gap. The SC-010 property is structural and independently
+> reproducible from the shipped kit and the public chain.
+
+*Signed: Daniel Lockhart, Director — Software Engineering, Sovren Technologies
+— D9 self-certification 2026-09-11.*
