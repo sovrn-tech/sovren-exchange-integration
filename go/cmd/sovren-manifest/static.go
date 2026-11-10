@@ -72,7 +72,7 @@ var staticMainnet = staticNetwork{
 	CometBFTVersion: "v0.38.23",
 	IBCGoVersion:    "v10.5.0",
 	WasmdVersion:    "v0.60.7",
-	GoVersion:       "1.25.7",
+	GoVersion:       "1.26.10",
 	SDKVersion:      "v0.53.8",
 
 	// RecommendedGasPrice is 25x the live x/globalfee floor (0.001usovr) —
@@ -114,7 +114,7 @@ var staticTestnet = staticNetwork{
 	CometBFTVersion: "v0.38.23",
 	IBCGoVersion:    "v10.5.0",
 	WasmdVersion:    "v0.60.7",
-	GoVersion:       "1.25.7",
+	GoVersion:       "1.26.10",
 	SDKVersion:      "v0.53.8",
 
 	// RecommendedGasPrice is 25x the live x/globalfee floor (0.001usovr) —

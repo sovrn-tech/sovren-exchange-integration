@@ -25,8 +25,8 @@
 # 3 missing prerequisites.
 ###############################################################
 
-KIT_VERSION="0.2.0"
-APP_VERSION="v0.27.1"
+KIT_VERSION="0.3.0"
+APP_VERSION="v0.28.0"
 
 KIT_ROOT="$(cd "$(dirname "$0")" && pwd)"
 MODE="${1:-full}"
@@ -101,7 +101,7 @@ fi
 ###############################################################
 # 2. Standalone build proof
 ###############################################################
-GO_IMAGE="${VERIFY_KIT_GO_IMAGE:-golang:1.25}"
+GO_IMAGE="${VERIFY_KIT_GO_IMAGE:-golang:1.26.10-bookworm}"
 NODE_IMAGE="${VERIFY_KIT_NODE_IMAGE:-node:22}"
 HAVE_VECTORS=0
 ls "$KIT_ROOT"/go/cmd/sovren-vectors/*.go >/dev/null 2>&1 && HAVE_VECTORS=1

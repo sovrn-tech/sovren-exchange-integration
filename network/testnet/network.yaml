@@ -24,8 +24,8 @@ versions:
   cometbft: v0.38.23
   ibc_go: v10.5.0
   cosmwasm_wasmd: v0.60.7
-  go: "1.25.7"
-  app: v0.27.1-ephemeral1
+  go: "1.26.10"
+  app: v0.28.0
 fees:
   # minimum_gas_price mirrors the live x/globalfee floor (rule 3).
   minimum_gas_price: "0.001usovr"

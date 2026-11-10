@@ -95,25 +95,48 @@ func newDrillEnv(t *testing.T) *drillEnv {
 	return &drillEnv{client: c, store: s, wf: wf, chainID: status.ChainID, source: from.Bech32, dest: dest.Bech32}
 }
 
-func (d *drillEnv) submitAndSign(t *testing.T, id, idem, amount string) storage.WithdrawalRecord {
-	t.Helper()
+// submitAndSign drives one withdrawal through SUBMIT → SIGNED and returns a
+// plain error rather than failing a *testing.T directly: it is called from
+// worker goroutines in TestDrillConcurrent20, and testing.T's FailNow-family
+// methods (which require.NoError uses on failure) must only be called from
+// the goroutine running the test function — calling them from another
+// goroutine triggers runtime.Goexit() there, which a deferred recover()
+// cannot catch, silently dropping the failure instead of surfacing it.
+func (d *drillEnv) submitAndSign(id, idem, amount string) (storage.WithdrawalRecord, error) {
 	ctx := context.Background()
-	_, err := d.wf.Submit(ctx, Request{
+	if _, err := d.wf.Submit(ctx, Request{
 		WithdrawalID: id, IdempotencyKey: idem,
 		SourceAddress: d.source, DestinationAddress: d.dest,
 		AmountBaseUnits: amount, Memo: "drill " + id,
-	})
-	require.NoError(t, err)
-	require.NoError(t, d.wf.ValidateAddress(ctx, id))
-	require.NoError(t, d.wf.ApproveCompliance(ctx, id))
-	require.NoError(t, d.wf.ReserveFunds(ctx, id))
-	require.NoError(t, d.wf.ReserveSequence(ctx, id))
-	require.NoError(t, d.wf.Build(ctx, id))
-	require.NoError(t, d.wf.Simulate(ctx, id))
-	require.NoError(t, d.wf.Sign(ctx, id))
+	}); err != nil {
+		return storage.WithdrawalRecord{}, fmt.Errorf("submit %s: %w", id, err)
+	}
+	if err := d.wf.ValidateAddress(ctx, id); err != nil {
+		return storage.WithdrawalRecord{}, fmt.Errorf("validate address %s: %w", id, err)
+	}
+	if err := d.wf.ApproveCompliance(ctx, id); err != nil {
+		return storage.WithdrawalRecord{}, fmt.Errorf("approve compliance %s: %w", id, err)
+	}
+	if err := d.wf.ReserveFunds(ctx, id); err != nil {
+		return storage.WithdrawalRecord{}, fmt.Errorf("reserve funds %s: %w", id, err)
+	}
+	if err := d.wf.ReserveSequence(ctx, id); err != nil {
+		return storage.WithdrawalRecord{}, fmt.Errorf("reserve sequence %s: %w", id, err)
+	}
+	if err := d.wf.Build(ctx, id); err != nil {
+		return storage.WithdrawalRecord{}, fmt.Errorf("build %s: %w", id, err)
+	}
+	if err := d.wf.Simulate(ctx, id); err != nil {
+		return storage.WithdrawalRecord{}, fmt.Errorf("simulate %s: %w", id, err)
+	}
+	if err := d.wf.Sign(ctx, id); err != nil {
+		return storage.WithdrawalRecord{}, fmt.Errorf("sign %s: %w", id, err)
+	}
 	rec, err := d.store.Withdrawals().Get(ctx, id)
-	require.NoError(t, err)
-	return rec
+	if err != nil {
+		return storage.WithdrawalRecord{}, fmt.Errorf("get %s: %w", id, err)
+	}
+	return rec, nil
 }
 
 func (d *drillEnv) confirmWithin(t *testing.T, id string, deadline time.Duration) {
@@ -145,7 +168,8 @@ func TestDrillWithdrawalLifecycle(t *testing.T) {
 	ctx := context.Background()
 	id := fmt.Sprintf("drill-%d", time.Now().UnixNano())
 
-	rec := d.submitAndSign(t, id, "idem-"+id, "1000000")
+	rec, err := d.submitAndSign(id, "idem-"+id, "1000000")
+	require.NoError(t, err)
 	require.Equal(t, storage.WithdrawalSigned, rec.Status)
 
 	outcome, err := d.wf.Broadcast(ctx, id)
@@ -168,7 +192,8 @@ func TestDrillDuplicateSubmit(t *testing.T) {
 	id := fmt.Sprintf("drill-dup-%d", time.Now().UnixNano())
 	idem := "idem-" + id
 
-	rec := d.submitAndSign(t, id, idem, "1000000")
+	rec, err := d.submitAndSign(id, idem, "1000000")
+	require.NoError(t, err)
 
 	dup, err := d.wf.Submit(ctx, Request{
 		WithdrawalID: id + "-second", IdempotencyKey: idem,
@@ -207,7 +232,9 @@ func TestDrillConcurrent20(t *testing.T) {
 				}
 			}()
 			id := fmt.Sprintf("%s-%02d", base, i)
-			d.submitAndSign(t, id, "idem-"+id, "1000000")
+			if _, err := d.submitAndSign(id, "idem-"+id, "1000000"); err != nil {
+				errCh <- fmt.Errorf("worker %d: %w", i, err)
+			}
 		}(i)
 	}
 	wg.Wait()

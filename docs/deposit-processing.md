@@ -25,6 +25,8 @@ block N ──▶ ParseBlockTransfers ──▶ ChainTransferLedger (classificat
    `/cosmos.bank.v1beta1.MsgSend` and `MsgMultiSend` are unpacked by type
    URL. The SDK TxConfig decoder is deliberately not used: its strict
    unknown-type rejection fails on this chain's custom-module traffic.
+   One shape is different: a tx that executes an `x/group` proposal. The
+   parser decodes this shape from events, not the body. See below.
 3. Every usovr movement touching a watched address is appended to the
    immutable **ChainTransferLedger** with a classification (below). The
    ledger — not customer-credit status — is the reconciliation source.
@@ -80,7 +82,50 @@ Deposit unique key, enforced by a database UNIQUE constraint:
 Ledger rows use `op_index`: IN rows reuse the output coin index; sender-side
 OUT rows continue the numbering after all output coins; event-derived review
 rows start at `65536 + 2×event_index` so they can never collide with
-body-decoded rows.
+body-decoded rows. Group-exec rows start at `1048576 + 2×event_index`, above
+both other ranges.
+
+## Group-proposal payouts
+
+Sovren funds exchanges from `x/group` treasuries. The LP reserve, the
+service/OTC reserve, and the exchange allocation are all group policies.
+
+The tx body of a group payout carries only `MsgVote` or `MsgExec`. The body
+decode does not see the inner sends. The group module also prunes the
+proposal in the same transaction. A lookup of the proposal after execution
+is not reliable. The events are the durable record.
+
+The parser reads these movements from the transaction events:
+
+- The gate is `cosmos.group.v1.EventExec` with
+  `result = PROPOSAL_EXECUTOR_RESULT_SUCCESS`, at a message index the body
+  decode did not attribute. Typed events use proto-JSON encoding. The
+  result value can arrive quoted. The decoder accepts both the quoted form
+  and the bare form.
+- The parser credits only `transfer` events at that message index. A
+  transfer event names both parties. The normal input-set classification
+  applies to it. The parser drops the matching `coin_spent` /
+  `coin_received` aliases, the same as in event review.
+- The parser does not credit any other exec result. The movement then
+  falls through to event review. It stays visible as
+  `UNATTRIBUTED_REVIEW`.
+- One exec can send to the same address twice, for the same amount. The
+  event index gives each send its own `coin_index`. The parser records
+  both sends.
+
+**Backfill.** The fix is forward-only. Ledger rows are append-only. The
+repository has no update, void, or supersede operation. A
+`UNATTRIBUTED_REVIEW` row written before this change can never become a
+credited row.
+
+Do not rescan old blocks to backfill this fix. A rescan writes the credited
+row at a new, separate `op_index`. This row does not collide with the old
+review row. The expected balance would then count the movement twice.
+
+Credit these old deposits through the existing manual-review process
+instead. The first known case on `sovr-1` is exec tx
+`364F4273411F3ED0A7CFE58B5B8FB1AA0E50AA4A431E5AF56EC2B1131D285F1D`, at
+height 2,059,631.
 
 ## Deposit state machine (data model §3b)
 
@@ -107,8 +152,9 @@ A deposit is credited only when **all** of the following hold:
 1. the transaction is in a committed block on the node's accepted chain;
 2. the execution result is success (`code == 0`) — failed txs are terminal
    `REJECTED` (FR-029);
-3. the message is a recognized supported transfer shape (bank `MsgSend` /
-   `MsgMultiSend` outputs in v1);
+3. the message is a recognized supported transfer shape: bank `MsgSend` /
+   `MsgMultiSend` outputs, or the inner sends of a successful `x/group`
+   proposal execution (see "Group-proposal payouts" below);
 4. the recipient is exchange-controlled (in the watch set);
 5. the denomination is exactly `usovr`;
 6. the amount is positive;
@@ -173,8 +219,10 @@ packed signer pubkeys).
 
 ## Event channels (strictly scoped)
 
-Events are a **mandatory secondary detection channel, never a crediting
-source**:
+Events are a **mandatory secondary detection channel**. They are a crediting
+source for one shape only: the inner sends of a successful `x/group`
+proposal execution (see "Group-proposal payouts"). Every other shape routes
+to review:
 
 - `txs_results[i].events` are tx-correlated. For txs the body decode could
   not fully attribute (authz-wrapped sends, wasm transfers, module payouts),

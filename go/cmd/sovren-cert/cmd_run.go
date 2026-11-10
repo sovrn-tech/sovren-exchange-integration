@@ -94,6 +94,8 @@ func cmdRun(args []string) int {
 	rc.ManifestPath = *manifestPath
 	if rc.ManifestPath == "" {
 		rc.ManifestPath = filepath.Join(root, "network", *network, "network.yaml")
+	} else if abs, err := filepath.Abs(rc.ManifestPath); err == nil {
+		rc.ManifestPath = abs
 	}
 	if m, err := client.LoadManifest(rc.ManifestPath); err == nil {
 		rc.Manifest = m

@@ -19,6 +19,11 @@ export const DEPOSIT_BASE_DENOM = "usovr";
 // body-decoded op index (bounded by 2 × the message's coin count).
 export const REVIEW_OP_INDEX_BASE = 65536;
 
+// Transfer rows derived from a successful x/group proposal execution sit
+// above the body-decoded range and above the whole review range. An
+// exec-derived row can therefore never collide with either row type.
+export const GROUP_EXEC_OP_INDEX_BASE = 1048576;
+
 export type LedgerDirection = "IN" | "OUT";
 
 export type Classification =
@@ -210,11 +215,27 @@ const ATTR_FEE_PAYER = "fee_payer";
 const ATTR_GRANTER = "granter";
 const ATTR_MSG_INDEX = "msg_index";
 
+// x/group proposal execution (issue #443). EventExec is a typed event. The
+// SDK proto-JSON-marshals its attribute values. The result therefore arrives
+// as `"PROPOSAL_EXECUTOR_RESULT_SUCCESS"`, with literal quote characters.
+// This differs from the plain string attributes of the bank and ante events
+// above.
+const EVENT_GROUP_EXEC = "cosmos.group.v1.EventExec";
+const ATTR_RESULT = "result";
+const GROUP_EXEC_RESULT_SUCCESS = "PROPOSAL_EXECUTOR_RESULT_SUCCESS";
+
 function attr(ev: TxEvent, key: string): string {
   for (const a of ev.attributes) {
     if (a.key === key) return a.value;
   }
   return "";
+}
+
+// unquoteAttr strips the proto-JSON quoting the SDK applies to typed-event
+// attribute values. It leaves a bare value unchanged. The decode therefore
+// stays tolerant of either form.
+function unquoteAttr(value: string): string {
+  return value.replace(/^"+|"+$/g, "");
 }
 
 const COIN_SEGMENT_RE = /^([0-9]+)([a-zA-Z][a-zA-Z0-9/:._-]*)$/;
@@ -235,6 +256,14 @@ export function usovrAmount(coins: string): bigint {
 
 function coinAmountPositive(amount: string): boolean {
   return CANONICAL_INT_RE.test(amount) && amount !== "0";
+}
+
+// attrUint32 reads a numeric event attribute. A missing or malformed value
+// gives null.
+function attrUint32(ev: TxEvent, key: string): number | null {
+  const value = attr(ev, key);
+  if (value === "" || !CANONICAL_INT_RE.test(value)) return null;
+  return Number(value);
 }
 
 interface ParserState {
@@ -331,10 +360,17 @@ function parseTx(state: ParserState, txBytes: Uint8Array, res: TxExecResult): vo
 
   captureFeeDeduction(state, hash, auth, res);
 
+  // Movement views the group-exec pass turned into canonical transfer rows.
+  // Event review must not re-emit them as review rows (double count).
+  const credited = new Set<string>();
+  if (res.code === 0) {
+    handleGroupExec(state, hash, res, body?.memo ?? "", attributed, credited);
+  }
+
   // Secondary detection only for successful txs the body decode could not
   // fully attribute; failed txs move no funds (FR-029).
   if (!fullyAttributed && res.code === 0) {
-    eventReview(state, hash, res, attributed);
+    eventReview(state, hash, res, attributed, credited);
   }
 }
 
@@ -343,6 +379,100 @@ function memoReviewReason(state: ParserState, entry: WatchedAddress, classificat
     return "omnibus memo required but missing or unrecognized (FR-016)";
   }
   return "";
+}
+
+// handleGroupExec credits the inner bank transfers of a successfully executed
+// x/group proposal (issue #443). The tx body carries only MsgVote or MsgExec.
+// The proposal's sends are therefore invisible to the body decode. The group
+// module also prunes the proposal in the same tx. The events are the only
+// durable record of what moved.
+//
+// A non-SUCCESS exec result is never credited. That message index is left to
+// eventReview, which keeps the movement visible as UNATTRIBUTED_REVIEW.
+//
+// Only transfer events are credited. A transfer event names both parties.
+// classifyIn / classifyOut therefore apply exactly as for a decoded MsgSend.
+// Each credited movement view is recorded in credited. This suppresses its
+// coin_spent / coin_received aliases downstream. A coin event with no transfer
+// twin still routes to review.
+function handleGroupExec(
+  state: ParserState,
+  txHash: string,
+  res: TxExecResult,
+  memo: string,
+  attributed: Set<number>,
+  credited: Set<string>,
+): void {
+  const events = res.events ?? [];
+  const exec = new Set<number>();
+  for (const ev of events) {
+    if (ev.type !== EVENT_GROUP_EXEC) continue;
+    const msgIndex = attrUint32(ev, ATTR_MSG_INDEX);
+    if (msgIndex === null || attributed.has(msgIndex)) continue;
+    if (unquoteAttr(attr(ev, ATTR_RESULT)) !== GROUP_EXEC_RESULT_SUCCESS) continue;
+    exec.add(msgIndex);
+  }
+  if (exec.size === 0) return;
+
+  for (let evIdx = 0; evIdx < events.length; evIdx++) {
+    const ev = events[evIdx]!;
+    if (ev.type !== EVENT_TRANSFER) continue;
+    const msgIndex = attrUint32(ev, ATTR_MSG_INDEX);
+    if (msgIndex === null || !exec.has(msgIndex)) continue;
+    const amount = usovrAmount(attr(ev, ATTR_AMOUNT));
+    if (amount <= 0n) continue;
+    const recipient = attr(ev, ATTR_RECIPIENT);
+    const sender = attr(ev, ATTR_SENDER);
+    if (recipient === "" || sender === "") continue;
+    // One exec carries many sends at one msg_index. The event index is
+    // therefore the only stable per-movement identity. It gives both the
+    // deposit coin index (FR-024) and the ledger op index.
+    const ci = evIdx;
+    const base = GROUP_EXEC_OP_INDEX_BASE + 2 * ci;
+    const toEntry = state.watch.get(recipient);
+    if (toEntry !== undefined) {
+      const { classification, reason } = classifyIn(state, toEntry, [sender]);
+      state.out.transfers.push({
+        txHash,
+        messageIndex: msgIndex,
+        coinIndex: ci,
+        opIndex: base,
+        direction: "IN",
+        address: recipient,
+        counterpartySet: [sender],
+        senderAddress: sender,
+        denom: DEPOSIT_BASE_DENOM,
+        amountBaseUnits: amount.toString(),
+        memo,
+        txCode: res.code,
+        txLog: res.log ?? "",
+        classification,
+        reviewReason: memoReviewReason(state, toEntry, classification, memo) || reason,
+      });
+      credited.add(reviewKey(msgIndex, "IN", recipient, amount));
+    }
+    const fromEntry = state.watch.get(sender);
+    if (fromEntry !== undefined) {
+      state.out.transfers.push({
+        txHash,
+        messageIndex: msgIndex,
+        coinIndex: ci,
+        opIndex: base + 1,
+        direction: "OUT",
+        address: sender,
+        counterpartySet: [recipient],
+        senderAddress: null,
+        denom: DEPOSIT_BASE_DENOM,
+        amountBaseUnits: amount.toString(),
+        memo,
+        txCode: res.code,
+        txLog: res.log ?? "",
+        classification: classifyOut(state, fromEntry, [recipient]),
+        reviewReason: "",
+      });
+      credited.add(reviewKey(msgIndex, "OUT", sender, amount));
+    }
+  }
 }
 
 function handleSend(state: ParserState, txHash: string, mi: number, msg: MsgSend, memo: string, res: TxExecResult): void {
@@ -572,20 +702,22 @@ function captureFeeDeduction(state: ParserState, txHash: string, auth: AuthInfo 
 // canonical (they carry the counterparty), so matching coin aliases are
 // dropped. Every transfer occurrence is retained: two real, identical
 // movements can share msg_index, direction, address, and amount.
+//
+// credited holds the movement views the group-exec pass already turned into
+// canonical transfer rows; re-emitting them here would count them twice.
 function eventReview(
   state: ParserState,
   txHash: string,
   res: TxExecResult,
   attributed: Set<number>,
+  credited: Set<string>,
 ): void {
   const events = res.events ?? [];
   const transferKeys = new Set<string>();
   for (const ev of events) {
     if (ev.type !== EVENT_TRANSFER) continue;
-    const msgIndexStr = attr(ev, ATTR_MSG_INDEX);
-    if (msgIndexStr === "" || !CANONICAL_INT_RE.test(msgIndexStr)) continue;
-    const msgIndex = Number(msgIndexStr);
-    if (attributed.has(msgIndex)) continue;
+    const msgIndex = attrUint32(ev, ATTR_MSG_INDEX);
+    if (msgIndex === null || attributed.has(msgIndex)) continue;
     const amount = usovrAmount(attr(ev, ATTR_AMOUNT));
     if (amount <= 0n) continue;
     const { inAddr, outAddr } = transferEventParties(ev);
@@ -595,9 +727,8 @@ function eventReview(
 
   for (let evIdx = 0; evIdx < events.length; evIdx++) {
     const ev = events[evIdx]!;
-    const msgIndexStr = attr(ev, ATTR_MSG_INDEX);
-    if (msgIndexStr === "" || !CANONICAL_INT_RE.test(msgIndexStr)) continue;
-    const msgIndex = Number(msgIndexStr);
+    const msgIndex = attrUint32(ev, ATTR_MSG_INDEX);
+    if (msgIndex === null) continue;
     // Skip events belonging to a message the body decode already attributed.
     if (attributed.has(msgIndex)) continue;
     const { inAddr, outAddr, counterparty } = transferEventParties(ev);
@@ -608,6 +739,7 @@ function eventReview(
     if (
       inAddr !== "" &&
       state.watch.contains(inAddr) &&
+      !credited.has(reviewKey(msgIndex, "IN", inAddr, amount)) &&
       selectEventFamily(fromTransfer, transferKeys, reviewKey(msgIndex, "IN", inAddr, amount))
     ) {
       state.out.reviewCandidates.push({
@@ -626,6 +758,7 @@ function eventReview(
     if (
       outAddr !== "" &&
       state.watch.contains(outAddr) &&
+      !credited.has(reviewKey(msgIndex, "OUT", outAddr, amount)) &&
       selectEventFamily(fromTransfer, transferKeys, reviewKey(msgIndex, "OUT", outAddr, amount))
     ) {
       state.out.reviewCandidates.push({

@@ -2,8 +2,8 @@ package deposits
 
 // Shared cross-language parse fixtures: the Go suite generates
 // typescript/src/deposits/fixtures/test-vectors/parse-cases.json (regenerate with
-// SOVREN_WRITE_FIXTURES=1 go test ./deposits -run TestParseFixtures) and
-// both the Go and TS parsers must reproduce the expected outputs (SC-006).
+// SOVREN_WRITE_FIXTURES=1 go test ./deposits -run TestParseFixturesSharedWithTypeScript)
+// and both the Go and TS parsers must reproduce the expected outputs (SC-006).
 
 import (
 	"encoding/base64"
@@ -252,6 +252,40 @@ func buildFixtureCases(t *testing.T, accts []testAccount) []fxCase {
 	feeEv := func(fee, payer string) fxEvent {
 		return fxEvent{Type: eventTypeTx, Attributes: []fxAttr{{Key: attrFee, Value: fee}, {Key: attrFeePayer, Value: payer}}}
 	}
+	// groupExecEv builds the typed EventExec of an x/group proposal execution
+	// (issue #443). Proto-JSON encoding puts literal quote characters around
+	// the result value. Live sovr-1 tx
+	// 364F4273411F3ED0A7CFE58B5B8FB1AA0E50AA4A431E5AF56EC2B1131D285F1D
+	// confirms the wire form.
+	groupExecEv := func(msgIndex, result string) fxEvent {
+		return fxEvent{Type: eventTypeGroupExec, Attributes: []fxAttr{
+			{Key: "proposal_id", Value: `"3"`},
+			{Key: attrResult, Value: `"` + result + `"`},
+			{Key: attrMsgIndex, Value: msgIndex},
+		}}
+	}
+	// innerSendEvs is the bank event family of one inner send, in the live
+	// order: coin_spent, coin_received, transfer.
+	innerSendEvs := func(from, to, amount, msgIndex string) []fxEvent {
+		return []fxEvent{
+			{Type: eventTypeCoinSpent, Attributes: []fxAttr{
+				{Key: attrSpender, Value: from},
+				{Key: attrAmount, Value: amount},
+				{Key: attrMsgIndex, Value: msgIndex},
+			}},
+			{Type: eventTypeCoinReceived, Attributes: []fxAttr{
+				{Key: attrReceiver, Value: to},
+				{Key: attrAmount, Value: amount},
+				{Key: attrMsgIndex, Value: msgIndex},
+			}},
+			{Type: eventTypeTransfer, Attributes: []fxAttr{
+				{Key: attrRecipient, Value: to},
+				{Key: attrSender, Value: from},
+				{Key: attrAmount, Value: amount},
+				{Key: attrMsgIndex, Value: msgIndex},
+			}},
+		}
+	}
 
 	external, external2 := accts[0], accts[1]
 	customer, omnibus, hot, feeW := accts[2], accts[3], accts[4], accts[5]
@@ -321,6 +355,49 @@ func buildFixtureCases(t *testing.T, accts []testAccount) []fxCase {
 		require.NoError(t, err)
 		return rawTxFromAnys(t, a, "", nil)
 	}()
+	// A group payout carries only MsgVote in its body. The inner sends are
+	// visible only through the events. The wrapped message content is never
+	// unmarshaled, so only the type URL matters.
+	groupVoteAnys := func() []*codectypes.Any {
+		a, err := anyWithTypeURL("/cosmos.group.v1.MsgVote", &banktypes.MsgSend{
+			FromAddress: external.Bech32, ToAddress: external.Bech32, Amount: coins("1usovr"),
+		})
+		require.NoError(t, err)
+		return a
+	}
+	groupVote := rawTxFromAnys(t, groupVoteAnys(), "", nil)
+	groupVotePlusUnknown := func() []byte {
+		unknown, err := anyWithTypeURL("/cosmos.authz.v1beta1.MsgExec", &banktypes.MsgSend{
+			FromAddress: external.Bech32, ToAddress: customer.Bech32, Amount: coins("42usovr"),
+		})
+		require.NoError(t, err)
+		return rawTxFromAnys(t, []*codectypes.Any{groupVoteAnys()[0], unknown[0]}, "", nil)
+	}()
+
+	groupExecCredit := append([]fxEvent{feeEv("9301usovr", external.Bech32)},
+		innerSendEvs(external.Bech32, customer.Bech32, "1000000000000usovr", "0")...)
+	groupExecCredit = append(groupExecCredit, groupExecEv("0", groupExecResultSuccess))
+
+	groupExecFailure := append(innerSendEvs(external.Bech32, customer.Bech32, "25000000000usovr", "0"),
+		groupExecEv("0", "PROPOSAL_EXECUTOR_RESULT_FAILURE"))
+
+	groupExecFanOut := innerSendEvs(external.Bech32, external2.Bech32, "400000000000usovr", "0")
+	groupExecFanOut = append(groupExecFanOut, innerSendEvs(external.Bech32, customer.Bech32, "25000000000usovr", "0")...)
+	groupExecFanOut = append(groupExecFanOut, innerSendEvs(external.Bech32, external2.Bech32, "1000000000000usovr", "0")...)
+	groupExecFanOut = append(groupExecFanOut, innerSendEvs(external.Bech32, hot.Bech32, "5000000000usovr", "0")...)
+	groupExecFanOut = append(groupExecFanOut, innerSendEvs(external.Bech32, hot.Bech32, "5000000000usovr", "0")...)
+	groupExecFanOut = append(groupExecFanOut, groupExecEv("0", groupExecResultSuccess))
+
+	groupExecOut := append(innerSendEvs(hot.Bech32, external.Bech32, "700usovr", "0"),
+		groupExecEv("0", groupExecResultSuccess))
+
+	groupExecPlusReview := append(innerSendEvs(external.Bech32, customer.Bech32, "900usovr", "0"),
+		groupExecEv("0", groupExecResultSuccess))
+	groupExecPlusReview = append(groupExecPlusReview, fxEvent{Type: eventTypeCoinReceived, Attributes: []fxAttr{
+		{Key: attrReceiver, Value: customer.Bech32},
+		{Key: attrAmount, Value: "42usovr"},
+		{Key: attrMsgIndex, Value: "1"},
+	}})
 
 	return []fxCase{
 		mk("single-send-external", "kit-built signed MsgSend from an external sender to a watched customer address; fee payer is external so no FEE_DEDUCTION",
@@ -421,6 +498,16 @@ func buildFixtureCases(t *testing.T, accts []testAccount) []fxCase {
 					{Key: attrAmount, Value: "6000usovr"},
 				}},
 			}),
+		mk("group-exec-success-credits-inner-send", "successful x/group proposal execution: the inner send is a canonical credited transfer, not a review row — the body carries only MsgVote, so the events are the only record (issue #443)",
+			118, [][]byte{groupVote}, []fxTxResult{ok(groupExecCredit...)}, nil),
+		mk("group-exec-non-success-falls-through-to-review", "x/group exec with a non-SUCCESS result: never credited, the movement stays visible as UNATTRIBUTED_REVIEW (issue #443)",
+			119, [][]byte{groupVote}, []fxTxResult{ok(groupExecFailure...)}, nil),
+		mk("group-exec-fan-out-duplicate-amounts", "one exec fans out five inner sends at msg_index 0, two of them identical (same watched address, same amount): the event index gives each send its own coin_index/op_index, and only the watched recipients yield rows (issue #443)",
+			120, [][]byte{groupVote}, []fxTxResult{ok(groupExecFanOut...)}, nil),
+		mk("group-exec-watched-sender-out-row", "watched treasury paying out through its own group policy: OUT WITHDRAWAL row from the exec-derived transfer (issue #443)",
+			121, [][]byte{groupVote}, []fxTxResult{ok(groupExecOut...)}, nil),
+		mk("group-exec-op-index-disjoint-from-review", "exec-credited msg 0 plus an unattributed msg 1 in one tx: the credited row sits in the group-exec op-index range, the review row in the review range — the two ranges never collide (issue #443)",
+			116, [][]byte{groupVotePlusUnknown}, []fxTxResult{ok(groupExecPlusReview...)}, nil),
 		mk("feegrant-used", "use_feegrant present: the granter is the recorded fee payer",
 			112, [][]byte{granted}, []fxTxResult{ok(
 				fxEvent{Type: eventTypeUseFeeGrant, Attributes: []fxAttr{
@@ -448,7 +535,7 @@ func TestParseFixturesSharedWithTypeScript(t *testing.T) {
 			watch = append(watch, fxWatch{Address: w.Address, Kind: string(w.Kind), MemoRequired: w.MemoRequired})
 		}
 		file := fxFile{
-			Description: "UNSAFE_TEST_ONLY fixture material (standard test mnemonic, no real funds). Shared Go/TS parseBlockTransfers conformance fixtures. Regenerate: SOVREN_WRITE_FIXTURES=1 go test ./deposits -run TestParseFixtures (exchange-kit/go).",
+			Description: "UNSAFE_TEST_ONLY fixture material (standard test mnemonic, no real funds). Shared Go/TS parseBlockTransfers conformance fixtures. Regenerate: SOVREN_WRITE_FIXTURES=1 go test ./deposits -run TestParseFixturesSharedWithTypeScript (exchange-kit/go).",
 			ChainID:     testChainID,
 			Watch:       watch,
 			Cases:       cases,

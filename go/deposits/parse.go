@@ -38,6 +38,13 @@ const (
 // under UNIQUE(chain_id, tx_hash, message_index, op_index).
 const ReviewOpIndexBase uint32 = 1 << 16
 
+// GroupExecOpIndexBase offsets the transfer rows derived from a successful
+// x/group proposal execution. It sits above the body-decoded range and above
+// the whole ReviewOpIndexBase range. An exec-derived row can therefore never
+// collide with either row type under
+// UNIQUE(chain_id, tx_hash, message_index, op_index).
+const GroupExecOpIndexBase uint32 = 1 << 20
+
 // Event and attribute names emitted by the SDK bank module, the fee ante
 // decorator, feegrant, and baseapp message execution.
 const (
@@ -56,6 +63,17 @@ const (
 	attrFeePayer  = "fee_payer"
 	attrGranter   = "granter"
 	attrMsgIndex  = "msg_index"
+)
+
+// x/group proposal execution (issue #443). EventExec is a typed event. The
+// SDK proto-JSON-marshals its attribute values. The result therefore arrives
+// as `"PROPOSAL_EXECUTOR_RESULT_SUCCESS"`, with literal quote characters.
+// This differs from the plain string attributes of the bank and ante events
+// above.
+const (
+	eventTypeGroupExec     = "cosmos.group.v1.EventExec"
+	attrResult             = "result"
+	groupExecResultSuccess = "PROPOSAL_EXECUTOR_RESULT_SUCCESS"
 )
 
 // TransferCandidate is one classified usovr movement decoded from a tx body
@@ -299,11 +317,102 @@ func (p *parser) tx(txBytes []byte, res client.TxExecResult) {
 
 	p.feeDeduction(txHash, &auth, authOK, res)
 
+	// Movement views the group-exec pass turned into canonical transfer rows.
+	// Event review must not re-emit them as review rows (double count).
+	credited := map[string]bool{}
+	if res.Code == 0 {
+		p.groupExec(txHash, res, body.Memo, attributed, credited)
+	}
+
 	// Secondary detection only for successful txs the body decode could not
 	// fully attribute; failed txs move no funds (FR-029). Only the message
 	// indexes NOT already attributed are eligible for event review.
 	if !fullyAttributed && res.Code == 0 {
-		p.eventReview(txHash, res, attributed)
+		p.eventReview(txHash, res, attributed, credited)
+	}
+}
+
+// groupExec credits the inner bank transfers of a successfully executed
+// x/group proposal (issue #443). The tx body carries only MsgVote or
+// MsgExec. The proposal's sends are therefore invisible to the body decode.
+// The group module also prunes the proposal in the same tx. The events are
+// the only durable record of what moved.
+//
+// A non-SUCCESS exec result is never credited. That message index is left
+// to eventReview, which keeps the movement visible as UNATTRIBUTED_REVIEW.
+//
+// Only transfer events are credited. A transfer event names both parties.
+// classifyIn / classifyOut therefore apply exactly as for a decoded
+// MsgSend. Each credited movement view is recorded in credited. This
+// suppresses its coin_spent / coin_received aliases downstream. A coin
+// event with no transfer twin still routes to review.
+func (p *parser) groupExec(txHash string, res client.TxExecResult, memo string, attributed map[uint32]bool, credited map[string]bool) {
+	exec := map[uint32]bool{}
+	for _, ev := range res.Events {
+		if ev.Type != eventTypeGroupExec {
+			continue
+		}
+		msgIdx, hasMsgIdx := attrUint32(ev, attrMsgIndex)
+		if !hasMsgIdx || attributed[msgIdx] {
+			continue
+		}
+		if unquoteAttr(attr(ev, attrResult)) != groupExecResultSuccess {
+			continue
+		}
+		exec[msgIdx] = true
+	}
+	if len(exec) == 0 {
+		return
+	}
+
+	for evIdx, ev := range res.Events {
+		if ev.Type != eventTypeTransfer {
+			continue
+		}
+		msgIdx, hasMsgIdx := attrUint32(ev, attrMsgIndex)
+		if !hasMsgIdx || !exec[msgIdx] {
+			continue
+		}
+		amt := usovrAmount(attr(ev, attrAmount))
+		if !amt.IsPositive() {
+			continue
+		}
+		recipient, sender := attr(ev, attrRecipient), attr(ev, attrSender)
+		if recipient == "" || sender == "" {
+			continue
+		}
+		// One exec carries many sends at one msg_index. The event index is
+		// therefore the only stable per-movement identity. It gives both the
+		// deposit coin index (FR-024) and the ledger op index.
+		ci := uint32(evIdx)
+		base := GroupExecOpIndexBase + 2*ci
+		if entry, ok := p.watch.Get(recipient); ok {
+			class, reason := p.classifyIn(entry, []string{sender})
+			if class == storage.ClassExternalDeposit && entry.MemoRequired && !p.watch.memoRecognized(memo) {
+				reason = "omnibus memo required but missing or unrecognized (FR-016)"
+			}
+			from := sender
+			p.out.Transfers = append(p.out.Transfers, TransferCandidate{
+				TxHash: txHash, MessageIndex: msgIdx, CoinIndex: ci, OpIndex: base,
+				Direction: storage.DirectionIn, Address: recipient,
+				CounterpartySet: []string{sender}, SenderAddress: &from,
+				Denom: storage.BaseDenom, AmountBaseUnits: amt, Memo: memo,
+				TxCode: res.Code, TxLog: res.Log,
+				Classification: class, ReviewReason: reason,
+			})
+			credited[reviewKey(msgIdx, storage.DirectionIn, recipient, amt)] = true
+		}
+		if entry, ok := p.watch.Get(sender); ok {
+			p.out.Transfers = append(p.out.Transfers, TransferCandidate{
+				TxHash: txHash, MessageIndex: msgIdx, CoinIndex: ci, OpIndex: base + 1,
+				Direction: storage.DirectionOut, Address: sender,
+				CounterpartySet: []string{recipient},
+				Denom:           storage.BaseDenom, AmountBaseUnits: amt, Memo: memo,
+				TxCode: res.Code, TxLog: res.Log,
+				Classification: p.classifyOut(entry, []string{recipient}),
+			})
+			credited[reviewKey(msgIdx, storage.DirectionOut, sender, amt)] = true
+		}
 	}
 }
 
@@ -503,7 +612,10 @@ func (p *parser) feeDeduction(txHash string, auth *txtypes.AuthInfo, authOK bool
 // canonical (they carry the counterparty), so matching coin aliases are
 // dropped. Every transfer occurrence is retained: two real, identical
 // movements can share msg_index, direction, address, and amount.
-func (p *parser) eventReview(txHash string, res client.TxExecResult, attributed map[uint32]bool) {
+//
+// credited holds the movement views the group-exec pass already turned into
+// canonical transfer rows; re-emitting them here would count them twice.
+func (p *parser) eventReview(txHash string, res client.TxExecResult, attributed map[uint32]bool, credited map[string]bool) {
 	transferKeys := map[string]bool{}
 	for _, ev := range res.Events {
 		if ev.Type != eventTypeTransfer {
@@ -544,6 +656,7 @@ func (p *parser) eventReview(txHash string, res client.TxExecResult, attributed 
 		fromTransfer := ev.Type == eventTypeTransfer
 		base := ReviewOpIndexBase + 2*uint32(evIdx)
 		if inAddr != "" && p.watch.Contains(inAddr) &&
+			!credited[reviewKey(msgIdx, storage.DirectionIn, inAddr, amt)] &&
 			selectEventFamily(fromTransfer, transferKeys, reviewKey(msgIdx, storage.DirectionIn, inAddr, amt)) {
 			p.out.ReviewCandidates = append(p.out.ReviewCandidates, ReviewCandidate{
 				TxHash: txHash, MessageIndex: msgIdx, EventIndex: uint32(evIdx), OpIndex: base,
@@ -553,6 +666,7 @@ func (p *parser) eventReview(txHash string, res client.TxExecResult, attributed 
 			})
 		}
 		if outAddr != "" && p.watch.Contains(outAddr) &&
+			!credited[reviewKey(msgIdx, storage.DirectionOut, outAddr, amt)] &&
 			selectEventFamily(fromTransfer, transferKeys, reviewKey(msgIdx, storage.DirectionOut, outAddr, amt)) {
 			p.out.ReviewCandidates = append(p.out.ReviewCandidates, ReviewCandidate{
 				TxHash: txHash, MessageIndex: msgIdx, EventIndex: uint32(evIdx), OpIndex: base + 1,
@@ -692,6 +806,13 @@ func attr(ev client.Event, key string) string {
 		}
 	}
 	return ""
+}
+
+// unquoteAttr strips the proto-JSON quoting the SDK applies to typed-event
+// attribute values. It leaves a bare value unchanged. The decode therefore
+// stays tolerant of either form.
+func unquoteAttr(v string) string {
+	return strings.Trim(v, `"`)
 }
 
 func attrUint32(ev client.Event, key string) (uint32, bool) {

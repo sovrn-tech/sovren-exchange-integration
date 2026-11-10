@@ -105,7 +105,7 @@ peer discovery and validator shielding) and the proxied query endpoints
 (`rpc`, `api`, `grpc`). There is **no** validator (`val-*`) record in public
 DNS. Public query traffic terminates at the CDN edge and is proxied to a
 full-node gateway; validators sit behind sentries and are never directly
-addressable from a public route (see `mainnet-runbook/sentry-topology.md`).
+addressable from a public route.
 
 ### Recorded FR-063 waiver (2026-08-10)
 

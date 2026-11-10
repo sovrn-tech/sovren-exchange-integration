@@ -629,3 +629,190 @@ func TestUsovrAmountParsing(t *testing.T) {
 	require.True(t, usovrAmount("12foo").IsZero())
 	require.True(t, usovrAmount("not-coins").IsZero())
 }
+
+// groupExecEvent builds the typed EventExec the SDK emits. The result value
+// is proto-JSON quoted on the wire (live sovr-1 tx
+// 364F4273411F3ED0A7CFE58B5B8FB1AA0E50AA4A431E5AF56EC2B1131D285F1D).
+func groupExecEvent(msgIndex, result string) client.Event {
+	return client.Event{Type: eventTypeGroupExec, Attributes: []client.EventAttribute{
+		{Key: "proposal_id", Value: `"3"`},
+		{Key: attrResult, Value: `"` + result + `"`},
+		{Key: attrMsgIndex, Value: msgIndex},
+	}}
+}
+
+// groupVoteTx builds a tx body carrying only /cosmos.group.v1.MsgVote, the
+// live exec shape: the proposal's sends never appear in the body.
+func groupVoteTx(t *testing.T) []byte {
+	t.Helper()
+	anys, err := anyWithTypeURL("/cosmos.group.v1.MsgVote", &banktypes.MsgSend{
+		FromAddress: "voter", ToAddress: "voter", Amount: coins("1usovr"),
+	})
+	require.NoError(t, err)
+	return rawTxFromAnys(t, anys, "", nil)
+}
+
+// innerSendEvents is the full bank event family one inner send emits, in the
+// live order: coin_spent, coin_received, transfer.
+func innerSendEvents(from, to, amount, msgIndex string) []client.Event {
+	return []client.Event{
+		{Type: eventTypeCoinSpent, Attributes: []client.EventAttribute{
+			{Key: attrSpender, Value: from},
+			{Key: attrAmount, Value: amount},
+			{Key: attrMsgIndex, Value: msgIndex},
+		}},
+		{Type: eventTypeCoinReceived, Attributes: []client.EventAttribute{
+			{Key: attrReceiver, Value: to},
+			{Key: attrAmount, Value: amount},
+			{Key: attrMsgIndex, Value: msgIndex},
+		}},
+		{Type: eventTypeTransfer, Attributes: []client.EventAttribute{
+			{Key: attrRecipient, Value: to},
+			{Key: attrSender, Value: from},
+			{Key: attrAmount, Value: amount},
+			{Key: attrMsgIndex, Value: msgIndex},
+		}},
+	}
+}
+
+// A treasury payout executed through an x/group proposal must be credited,
+// not parked for review (issue #443). The body decodes to MsgVote only, so
+// the movement is visible exclusively through the exec events.
+func TestParseGroupExecSuccessCreditsInnerTransfer(t *testing.T) {
+	ws, accts := testWatchSet(t)
+	policy, customer := accts[0].Bech32, accts[2].Bech32
+	txBytes := groupVoteTx(t)
+
+	events := []client.Event{feeEvent("9301usovr", accts[1].Bech32)}
+	events = append(events, innerSendEvents(policy, customer, "1000000000000usovr", "0")...)
+	events = append(events, groupExecEvent("0", groupExecResultSuccess))
+	res := okResult(events...)
+
+	bp := mustParse(t, makeBlock(120, 0xC0, 0xBF, txBytes), makeResults(120, res), ws)
+	require.Len(t, bp.Transfers, 1, "the inner send must be one canonical transfer row")
+	require.Empty(t, bp.ReviewCandidates, "a credited movement must not also be parked for review")
+
+	c := bp.Transfers[0]
+	require.Equal(t, storage.DirectionIn, c.Direction)
+	require.Equal(t, storage.ClassExternalDeposit, c.Classification)
+	require.Equal(t, customer, c.Address)
+	require.Equal(t, "1000000000000", c.AmountBaseUnits.String())
+	require.Equal(t, storage.BaseDenom, c.Denom)
+	require.Equal(t, []string{policy}, c.CounterpartySet)
+	require.NotNil(t, c.SenderAddress)
+	require.Equal(t, policy, *c.SenderAddress)
+	require.Empty(t, c.ReviewReason)
+	require.Equal(t, uint32(0), c.MessageIndex)
+	// Event index 3: fee event, then coin_spent / coin_received / transfer.
+	require.Equal(t, uint32(3), c.CoinIndex)
+	require.Equal(t, GroupExecOpIndexBase+6, c.OpIndex)
+}
+
+// A non-SUCCESS exec moved nothing the kit may credit. The movement must
+// still reach the operator as UNATTRIBUTED_REVIEW.
+func TestParseGroupExecNonSuccessFallsThroughToReview(t *testing.T) {
+	ws, accts := testWatchSet(t)
+	policy, customer := accts[0].Bech32, accts[2].Bech32
+	txBytes := groupVoteTx(t)
+
+	for _, result := range []string{"PROPOSAL_EXECUTOR_RESULT_FAILURE", "PROPOSAL_EXECUTOR_RESULT_NOT_RUN", "PROPOSAL_EXECUTOR_RESULT_UNSPECIFIED"} {
+		t.Run(result, func(t *testing.T) {
+			events := append(innerSendEvents(policy, customer, "25000000000usovr", "0"), groupExecEvent("0", result))
+			bp := mustParse(t, makeBlock(121, 0xC1, 0xC0, txBytes), makeResults(121, okResult(events...)), ws)
+			require.Empty(t, bp.Transfers, "a non-SUCCESS exec must never credit")
+			require.Len(t, bp.ReviewCandidates, 1, "the movement must stay visible as review")
+			require.Equal(t, storage.DirectionIn, bp.ReviewCandidates[0].Direction)
+			require.Equal(t, customer, bp.ReviewCandidates[0].Address)
+			require.Equal(t, "25000000000", bp.ReviewCandidates[0].AmountBaseUnits.String())
+		})
+	}
+}
+
+// One exec fans out to many recipients at one msg_index, and two of them can
+// carry an identical amount to the same address (live tx, 5 recipients).
+// Each send must get its own deposit identity, so none is lost as a
+// duplicate, and the coin_spent / coin_received aliases must not add rows.
+func TestParseGroupExecFanOut(t *testing.T) {
+	ws, accts := testWatchSet(t)
+	policy, customer, hot := accts[0].Bech32, accts[2].Bech32, accts[4].Bech32
+	other1, other2 := accts[1].Bech32, deriveAccount(t, 9).Bech32
+	txBytes := groupVoteTx(t)
+
+	var events []client.Event
+	events = append(events, innerSendEvents(policy, other1, "400000000000usovr", "0")...)
+	events = append(events, innerSendEvents(policy, customer, "25000000000usovr", "0")...)
+	events = append(events, innerSendEvents(policy, other2, "1000000000000usovr", "0")...)
+	events = append(events, innerSendEvents(policy, hot, "5000000000usovr", "0")...)
+	events = append(events, innerSendEvents(policy, hot, "5000000000usovr", "0")...)
+	events = append(events, groupExecEvent("0", groupExecResultSuccess))
+
+	bp := mustParse(t, makeBlock(122, 0xC2, 0xC1, txBytes), makeResults(122, okResult(events...)), ws)
+	require.Len(t, bp.Transfers, 3, "only the watched recipients yield rows")
+	require.Empty(t, bp.ReviewCandidates)
+
+	seen := map[uint32]bool{}
+	for _, c := range bp.Transfers {
+		require.Equal(t, storage.DirectionIn, c.Direction)
+		require.Equal(t, storage.ClassExternalDeposit, c.Classification)
+		require.Equal(t, uint32(0), c.MessageIndex)
+		require.False(t, seen[c.CoinIndex], "each send needs its own deposit identity")
+		seen[c.CoinIndex] = true
+	}
+	require.Equal(t, customer, bp.Transfers[0].Address)
+	require.Equal(t, "25000000000", bp.Transfers[0].AmountBaseUnits.String())
+	// The two identical 5,000-SOVR sends to one address are distinct deposits.
+	require.Equal(t, hot, bp.Transfers[1].Address)
+	require.Equal(t, hot, bp.Transfers[2].Address)
+	require.Equal(t, bp.Transfers[1].AmountBaseUnits, bp.Transfers[2].AmountBaseUnits)
+	require.NotEqual(t, bp.Transfers[1].OpIndex, bp.Transfers[2].OpIndex)
+}
+
+// A watched treasury paying out through its own group policy yields the
+// sender-side OUT row.
+func TestParseGroupExecWatchedSenderYieldsOutRow(t *testing.T) {
+	ws, accts := testWatchSet(t)
+	hot, external := accts[4].Bech32, accts[0].Bech32
+	txBytes := groupVoteTx(t)
+
+	events := append(innerSendEvents(hot, external, "700usovr", "0"), groupExecEvent("0", groupExecResultSuccess))
+	bp := mustParse(t, makeBlock(123, 0xC3, 0xC2, txBytes), makeResults(123, okResult(events...)), ws)
+	require.Len(t, bp.Transfers, 1)
+	require.Empty(t, bp.ReviewCandidates)
+	c := bp.Transfers[0]
+	require.Equal(t, storage.DirectionOut, c.Direction)
+	require.Equal(t, storage.ClassWithdrawal, c.Classification)
+	require.Equal(t, hot, c.Address)
+	require.Equal(t, []string{external}, c.CounterpartySet)
+	require.Equal(t, GroupExecOpIndexBase+2*2+1, c.OpIndex)
+}
+
+// Exec-derived rows and event-review rows share the same tx, so their op
+// index ranges must stay disjoint under
+// UNIQUE(chain_id, tx_hash, message_index, op_index).
+func TestParseGroupExecOpIndexRangeDisjointFromReview(t *testing.T) {
+	ws, accts := testWatchSet(t)
+	policy, customer := accts[0].Bech32, accts[2].Bech32
+	vote, err := anyWithTypeURL("/cosmos.group.v1.MsgVote", &banktypes.MsgSend{
+		FromAddress: "voter", ToAddress: "voter", Amount: coins("1usovr"),
+	})
+	require.NoError(t, err)
+	unknown, err := anyWithTypeURL("/cosmos.authz.v1beta1.MsgExec", &banktypes.MsgSend{
+		FromAddress: policy, ToAddress: customer, Amount: coins("42usovr"),
+	})
+	require.NoError(t, err)
+	txBytes := rawTxFromAnys(t, []*codectypes.Any{vote[0], unknown[0]}, "", nil)
+
+	events := append(innerSendEvents(policy, customer, "900usovr", "0"), groupExecEvent("0", groupExecResultSuccess))
+	events = append(events, client.Event{Type: eventTypeCoinReceived, Attributes: []client.EventAttribute{
+		{Key: attrReceiver, Value: customer},
+		{Key: attrAmount, Value: "42usovr"},
+		{Key: attrMsgIndex, Value: "1"},
+	}})
+
+	bp := mustParse(t, makeBlock(124, 0xC4, 0xC3, txBytes), makeResults(124, okResult(events...)), ws)
+	require.Len(t, bp.Transfers, 1)
+	require.Len(t, bp.ReviewCandidates, 1)
+	require.GreaterOrEqual(t, bp.Transfers[0].OpIndex, GroupExecOpIndexBase)
+	require.GreaterOrEqual(t, bp.ReviewCandidates[0].OpIndex, ReviewOpIndexBase)
+	require.Less(t, bp.ReviewCandidates[0].OpIndex, GroupExecOpIndexBase)
+}

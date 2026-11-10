@@ -1,7 +1,7 @@
 // Shared-fixture conformance: the Go suite generates
 // fixtures/parse-cases.json and both parsers must reproduce the expected
 // outputs byte-for-byte (SC-006). Regenerate fixtures from exchange-kit/go:
-//   SOVREN_WRITE_FIXTURES=1 go test ./deposits -run TestParseFixtures
+//   SOVREN_WRITE_FIXTURES=1 go test ./deposits -run TestParseFixturesSharedWithTypeScript
 
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";

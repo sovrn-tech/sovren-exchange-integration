@@ -1,5 +1,5 @@
 {
-  "description": "UNSAFE_TEST_ONLY fixture material (standard test mnemonic, no real funds). Shared Go/TS parseBlockTransfers conformance fixtures. Regenerate: SOVREN_WRITE_FIXTURES=1 go test ./deposits -run TestParseFixtures (exchange-kit/go).",
+  "description": "UNSAFE_TEST_ONLY fixture material (standard test mnemonic, no real funds). Shared Go/TS parseBlockTransfers conformance fixtures. Regenerate: SOVREN_WRITE_FIXTURES=1 go test ./deposits -run TestParseFixturesSharedWithTypeScript (exchange-kit/go).",
   "chain_id": "sovr-fixture-1",
   "watch": [
     {
@@ -1006,6 +1006,882 @@
             "amount_base_units": "6000"
           }
         ]
+      }
+    },
+    {
+      "id": "group-exec-success-credits-inner-send",
+      "description": "successful x/group proposal execution: the inner send is a canonical credited transfer, not a review row — the body carries only MsgVote, so the events are the only record (issue #443)",
+      "block": {
+        "height": 118,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB76",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD75",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "CoUBCoIBChgvY29zbW9zLmdyb3VwLnYxLk1zZ1ZvdGUSZgorc292cjE5cmw0Y20yaG1yOGFmeTRrbGRweHozZmthNGpndXEwYWVzODI0eBIrc292cjE5cmw0Y20yaG1yOGFmeTRrbGRweHozZmthNGpndXEwYWVzODI0eBoKCgV1c292chIBMRoBAQ=="
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0,
+          "events": [
+            {
+              "type": "tx",
+              "attributes": [
+                {
+                  "key": "fee",
+                  "value": "9301usovr"
+                },
+                {
+                  "key": "fee_payer",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                }
+              ]
+            },
+            {
+              "type": "coin_spent",
+              "attributes": [
+                {
+                  "key": "spender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "1000000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_received",
+              "attributes": [
+                {
+                  "key": "receiver",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                },
+                {
+                  "key": "amount",
+                  "value": "1000000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "transfer",
+              "attributes": [
+                {
+                  "key": "recipient",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                },
+                {
+                  "key": "sender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "1000000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "cosmos.group.v1.EventExec",
+              "attributes": [
+                {
+                  "key": "proposal_id",
+                  "value": "\"3\""
+                },
+                {
+                  "key": "result",
+                  "value": "\"PROPOSAL_EXECUTOR_RESULT_SUCCESS\""
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "transfers": [
+          {
+            "tx_hash": "30000DB75EC103F331B7D050CF279166F2ED5FBE7F86DE8AC49827799D5B0B57",
+            "message_index": 0,
+            "coin_index": 3,
+            "op_index": 1048582,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+            "denom": "usovr",
+            "amount_base_units": "1000000000000",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "EXTERNAL_DEPOSIT",
+            "review_reason": ""
+          }
+        ],
+        "fee_deductions": [],
+        "review_candidates": [],
+        "block_events": []
+      }
+    },
+    {
+      "id": "group-exec-non-success-falls-through-to-review",
+      "description": "x/group exec with a non-SUCCESS result: never credited, the movement stays visible as UNATTRIBUTED_REVIEW (issue #443)",
+      "block": {
+        "height": 119,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB77",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD76",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "CoUBCoIBChgvY29zbW9zLmdyb3VwLnYxLk1zZ1ZvdGUSZgorc292cjE5cmw0Y20yaG1yOGFmeTRrbGRweHozZmthNGpndXEwYWVzODI0eBIrc292cjE5cmw0Y20yaG1yOGFmeTRrbGRweHozZmthNGpndXEwYWVzODI0eBoKCgV1c292chIBMRoBAQ=="
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0,
+          "events": [
+            {
+              "type": "coin_spent",
+              "attributes": [
+                {
+                  "key": "spender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "25000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_received",
+              "attributes": [
+                {
+                  "key": "receiver",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                },
+                {
+                  "key": "amount",
+                  "value": "25000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "transfer",
+              "attributes": [
+                {
+                  "key": "recipient",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                },
+                {
+                  "key": "sender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "25000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "cosmos.group.v1.EventExec",
+              "attributes": [
+                {
+                  "key": "proposal_id",
+                  "value": "\"3\""
+                },
+                {
+                  "key": "result",
+                  "value": "\"PROPOSAL_EXECUTOR_RESULT_FAILURE\""
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "transfers": [],
+        "fee_deductions": [],
+        "review_candidates": [
+          {
+            "tx_hash": "30000DB75EC103F331B7D050CF279166F2ED5FBE7F86DE8AC49827799D5B0B57",
+            "message_index": 0,
+            "event_index": 2,
+            "op_index": 65540,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "amount_base_units": "25000000000"
+          }
+        ],
+        "block_events": []
+      }
+    },
+    {
+      "id": "group-exec-fan-out-duplicate-amounts",
+      "description": "one exec fans out five inner sends at msg_index 0, two of them identical (same watched address, same amount): the event index gives each send its own coin_index/op_index, and only the watched recipients yield rows (issue #443)",
+      "block": {
+        "height": 120,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB78",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD77",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "CoUBCoIBChgvY29zbW9zLmdyb3VwLnYxLk1zZ1ZvdGUSZgorc292cjE5cmw0Y20yaG1yOGFmeTRrbGRweHozZmthNGpndXEwYWVzODI0eBIrc292cjE5cmw0Y20yaG1yOGFmeTRrbGRweHozZmthNGpndXEwYWVzODI0eBoKCgV1c292chIBMRoBAQ=="
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0,
+          "events": [
+            {
+              "type": "coin_spent",
+              "attributes": [
+                {
+                  "key": "spender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "400000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_received",
+              "attributes": [
+                {
+                  "key": "receiver",
+                  "value": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3"
+                },
+                {
+                  "key": "amount",
+                  "value": "400000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "transfer",
+              "attributes": [
+                {
+                  "key": "recipient",
+                  "value": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3"
+                },
+                {
+                  "key": "sender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "400000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_spent",
+              "attributes": [
+                {
+                  "key": "spender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "25000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_received",
+              "attributes": [
+                {
+                  "key": "receiver",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                },
+                {
+                  "key": "amount",
+                  "value": "25000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "transfer",
+              "attributes": [
+                {
+                  "key": "recipient",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                },
+                {
+                  "key": "sender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "25000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_spent",
+              "attributes": [
+                {
+                  "key": "spender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "1000000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_received",
+              "attributes": [
+                {
+                  "key": "receiver",
+                  "value": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3"
+                },
+                {
+                  "key": "amount",
+                  "value": "1000000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "transfer",
+              "attributes": [
+                {
+                  "key": "recipient",
+                  "value": "sovr1jrkmdcwgq94uaamx6zax2luewlhf7u4kegvxu3"
+                },
+                {
+                  "key": "sender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "1000000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_spent",
+              "attributes": [
+                {
+                  "key": "spender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "5000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_received",
+              "attributes": [
+                {
+                  "key": "receiver",
+                  "value": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun"
+                },
+                {
+                  "key": "amount",
+                  "value": "5000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "transfer",
+              "attributes": [
+                {
+                  "key": "recipient",
+                  "value": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun"
+                },
+                {
+                  "key": "sender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "5000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_spent",
+              "attributes": [
+                {
+                  "key": "spender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "5000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_received",
+              "attributes": [
+                {
+                  "key": "receiver",
+                  "value": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun"
+                },
+                {
+                  "key": "amount",
+                  "value": "5000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "transfer",
+              "attributes": [
+                {
+                  "key": "recipient",
+                  "value": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun"
+                },
+                {
+                  "key": "sender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "5000000000usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "cosmos.group.v1.EventExec",
+              "attributes": [
+                {
+                  "key": "proposal_id",
+                  "value": "\"3\""
+                },
+                {
+                  "key": "result",
+                  "value": "\"PROPOSAL_EXECUTOR_RESULT_SUCCESS\""
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "transfers": [
+          {
+            "tx_hash": "30000DB75EC103F331B7D050CF279166F2ED5FBE7F86DE8AC49827799D5B0B57",
+            "message_index": 0,
+            "coin_index": 5,
+            "op_index": 1048586,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+            "denom": "usovr",
+            "amount_base_units": "25000000000",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "EXTERNAL_DEPOSIT",
+            "review_reason": ""
+          },
+          {
+            "tx_hash": "30000DB75EC103F331B7D050CF279166F2ED5FBE7F86DE8AC49827799D5B0B57",
+            "message_index": 0,
+            "coin_index": 11,
+            "op_index": 1048598,
+            "direction": "IN",
+            "address": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+            "denom": "usovr",
+            "amount_base_units": "5000000000",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "EXTERNAL_DEPOSIT",
+            "review_reason": ""
+          },
+          {
+            "tx_hash": "30000DB75EC103F331B7D050CF279166F2ED5FBE7F86DE8AC49827799D5B0B57",
+            "message_index": 0,
+            "coin_index": 14,
+            "op_index": 1048604,
+            "direction": "IN",
+            "address": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+            "denom": "usovr",
+            "amount_base_units": "5000000000",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "EXTERNAL_DEPOSIT",
+            "review_reason": ""
+          }
+        ],
+        "fee_deductions": [],
+        "review_candidates": [],
+        "block_events": []
+      }
+    },
+    {
+      "id": "group-exec-watched-sender-out-row",
+      "description": "watched treasury paying out through its own group policy: OUT WITHDRAWAL row from the exec-derived transfer (issue #443)",
+      "block": {
+        "height": 121,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB79",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD78",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "CoUBCoIBChgvY29zbW9zLmdyb3VwLnYxLk1zZ1ZvdGUSZgorc292cjE5cmw0Y20yaG1yOGFmeTRrbGRweHozZmthNGpndXEwYWVzODI0eBIrc292cjE5cmw0Y20yaG1yOGFmeTRrbGRweHozZmthNGpndXEwYWVzODI0eBoKCgV1c292chIBMRoBAQ=="
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0,
+          "events": [
+            {
+              "type": "coin_spent",
+              "attributes": [
+                {
+                  "key": "spender",
+                  "value": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun"
+                },
+                {
+                  "key": "amount",
+                  "value": "700usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_received",
+              "attributes": [
+                {
+                  "key": "receiver",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "700usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "transfer",
+              "attributes": [
+                {
+                  "key": "recipient",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "sender",
+                  "value": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun"
+                },
+                {
+                  "key": "amount",
+                  "value": "700usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "cosmos.group.v1.EventExec",
+              "attributes": [
+                {
+                  "key": "proposal_id",
+                  "value": "\"3\""
+                },
+                {
+                  "key": "result",
+                  "value": "\"PROPOSAL_EXECUTOR_RESULT_SUCCESS\""
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "transfers": [
+          {
+            "tx_hash": "30000DB75EC103F331B7D050CF279166F2ED5FBE7F86DE8AC49827799D5B0B57",
+            "message_index": 0,
+            "coin_index": 2,
+            "op_index": 1048581,
+            "direction": "OUT",
+            "address": "sovr12ecyuddg4wlnhztusgju5zxxjgznkz7f4e7fun",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "sender_address": null,
+            "denom": "usovr",
+            "amount_base_units": "700",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "WITHDRAWAL",
+            "review_reason": ""
+          }
+        ],
+        "fee_deductions": [],
+        "review_candidates": [],
+        "block_events": []
+      }
+    },
+    {
+      "id": "group-exec-op-index-disjoint-from-review",
+      "description": "exec-credited msg 0 plus an unattributed msg 1 in one tx: the credited row sits in the group-exec op-index range, the review row in the review range — the two ranges never collide (issue #443)",
+      "block": {
+        "height": 116,
+        "hash_hex": "ABABABABABABABABABABABABABABABAB74",
+        "last_block_hash_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD73",
+        "time": "2026-07-21T12:00:00Z",
+        "txs_base64": [
+          "CpACCoIBChgvY29zbW9zLmdyb3VwLnYxLk1zZ1ZvdGUSZgorc292cjE5cmw0Y20yaG1yOGFmeTRrbGRweHozZmthNGpndXEwYWVzODI0eBIrc292cjE5cmw0Y20yaG1yOGFmeTRrbGRweHozZmthNGpndXEwYWVzODI0eBoKCgV1c292chIBMQqIAQodL2Nvc21vcy5hdXRoei52MWJldGExLk1zZ0V4ZWMSZworc292cjE5cmw0Y20yaG1yOGFmeTRrbGRweHozZmthNGpndXEwYWVzODI0eBIrc292cjFrbmc3dHY4M3Flc2d2djJ6ZTdoeGx3NHVyZnJqazh2cTlydGg4YxoLCgV1c292chICNDIaAQE="
+        ]
+      },
+      "tx_results": [
+        {
+          "code": 0,
+          "events": [
+            {
+              "type": "coin_spent",
+              "attributes": [
+                {
+                  "key": "spender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "900usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_received",
+              "attributes": [
+                {
+                  "key": "receiver",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                },
+                {
+                  "key": "amount",
+                  "value": "900usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "transfer",
+              "attributes": [
+                {
+                  "key": "recipient",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                },
+                {
+                  "key": "sender",
+                  "value": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+                },
+                {
+                  "key": "amount",
+                  "value": "900usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "cosmos.group.v1.EventExec",
+              "attributes": [
+                {
+                  "key": "proposal_id",
+                  "value": "\"3\""
+                },
+                {
+                  "key": "result",
+                  "value": "\"PROPOSAL_EXECUTOR_RESULT_SUCCESS\""
+                },
+                {
+                  "key": "msg_index",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "type": "coin_received",
+              "attributes": [
+                {
+                  "key": "receiver",
+                  "value": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c"
+                },
+                {
+                  "key": "amount",
+                  "value": "42usovr"
+                },
+                {
+                  "key": "msg_index",
+                  "value": "1"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "transfers": [
+          {
+            "tx_hash": "7C43EFF87AAFE5C02328BAE8833445F5FC206F030E66ABFB097E3116E9216457",
+            "message_index": 0,
+            "coin_index": 2,
+            "op_index": 1048580,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [
+              "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x"
+            ],
+            "sender_address": "sovr19rl4cm2hmr8afy4kldpxz3fka4jguq0aes824x",
+            "denom": "usovr",
+            "amount_base_units": "900",
+            "memo": "",
+            "tx_code": 0,
+            "classification": "EXTERNAL_DEPOSIT",
+            "review_reason": ""
+          }
+        ],
+        "fee_deductions": [],
+        "review_candidates": [
+          {
+            "tx_hash": "7C43EFF87AAFE5C02328BAE8833445F5FC206F030E66ABFB097E3116E9216457",
+            "message_index": 1,
+            "event_index": 4,
+            "op_index": 65544,
+            "direction": "IN",
+            "address": "sovr1kng7tv83qesgvv2ze7hxlw4urfrjk8vq9rth8c",
+            "counterparty_set": [],
+            "amount_base_units": "42"
+          }
+        ],
+        "block_events": []
       }
     },
     {
